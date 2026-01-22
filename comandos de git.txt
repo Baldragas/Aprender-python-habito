@@ -1,0 +1,11 @@
+Abre tu proyecto y crea un archivo llamado DIARIO.md.
+
+Escribe dentro: "Día 1: Configuré Git correctamente".
+
+En la terminal haz los 3 pasos:
+
+    git add .
+
+    git commit -m "Inicio de mi racha de commits"
+
+    git push origin main

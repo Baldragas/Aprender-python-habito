@@ -1,0 +1,1 @@
+Hoy cree el area de trabajo, personalizandola para solo programacion. Configuré git, entre otras herramientas necesarias.
