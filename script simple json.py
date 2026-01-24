@@ -71,3 +71,12 @@ Heroe.cargar('guardado.json')
 # pero añadiendo un atributo nuevo llamado furia,
 # ¿cómo escribirías esa línea de super() que corregimos antes?
 # super().__init__(nombre, vida, furia):
+
+
+
+#El Import: ¿Cómo traes la clase Personaje desde el archivo entidades.py al archivo main.py?
+from entidades import Personaje
+#La Ejecución: Tienes limpiar_pantalla() en herramientas.py. ¿Cómo la importas y cómo la activas?
+from herramientas import limpiar_pantalla
+#Spacing (Memoria de 7 días): ¿Qué método especial (__???__) se usa para que un objeto se imprima como texto bonito y no como <__main__.Objeto at 0x...>?
+__str__
