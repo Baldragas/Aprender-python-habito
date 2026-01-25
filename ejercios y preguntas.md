@@ -96,3 +96,12 @@ import unicodedata: #entidades
 ¿Qué pasa si olvidas poner import json en el archivo donde está el método guardar_partida?
 
 Que no puedo usar el modulo de json y por tanto fallaria el sistema de guardado y carga que hace uso de ese modulo
+
+¿Qué clase creará el sistema por defecto según tu código? (Pista: Mira el segundo argumento de tu .get()).
+Python
+Esta respuesta la se, aunque tu "pista" tecnicamente da de manera directa la respuesta, en fin, la clase por defecto que se crea es Personaje
+
+¿En qué archivo escribirías la definición del método def grito_de_guerra(self):?
+en entidades por supuesto que es donde esta la clase guerrero, bueno y todas las demas.
+Si en main.py tienes un objeto enemigo = Enemigo(...), ¿podrías llamar a enemigo.grito_de_guerra()? ¿Por qué?
+No podria porque grito de guerra es una funcion unica de la clase guerrero, aunque, si enemigo heredara a guerrero si que podria, pero este no es el caso.

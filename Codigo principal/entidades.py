@@ -149,6 +149,10 @@ class Enemigo(Personaje):
         else:
             return 0
 
+    def __repr__(self):
+        # Retorna un string que muestre el nombre y la vida de forma técnica
+        return f"Enemigo(nombre = '{self.nombre}', vida = {self._vida})"
+
 class Jefe(Personaje): 
     def __init__(self, nombre, vida, fuerza_base):
         super().__init__(nombre, vida, fuerza_base)
@@ -165,3 +169,6 @@ CLASES = {
     'Guerrero': Guerrero,
     'Jefe': Jefe
 }
+
+goblin = Enemigo('feo', 40, 10, 20)
+print(goblin.__repr__())
