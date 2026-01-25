@@ -80,3 +80,19 @@ from entidades import Personaje
 from herramientas import limpiar_pantalla
 #Spacing (Memoria de 7 días): ¿Qué método especial (__???__) se usa para que un objeto se imprima como texto bonito y no como <__main__.Objeto at 0x...>?
 __str__
+
+
+from personaje import Guerrero
+import personaje
+#No se a que te refieres con acceder quiero decir, podria crear un objeto Guerrero
+player = Guerrero("Conan", 100, 40)
+
+import json: # en entidades
+
+from entidades import Guerrero, Enemigo, Jefe: main, pero falta personaje, no?
+
+import unicodedata: #entidades
+
+¿Qué pasa si olvidas poner import json en el archivo donde está el método guardar_partida?
+
+Que no puedo usar el modulo de json y por tanto fallaria el sistema de guardado y carga que hace uso de ese modulo

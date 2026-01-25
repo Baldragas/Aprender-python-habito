@@ -1,5 +1,5 @@
-import json
 import unicodedata
+import json
 
 def normalize(text: str) -> str:
     return unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('ascii').lower()
@@ -30,7 +30,6 @@ class Inventario:
         if not self.items:
             return "Inventario vacío"
         return "Inventario: " + ", ".join(f"{key.capitalize()}: {cant}" for key, cant in self.items.items())
-
 
 class Personaje:
     def __init__(self, nombre, vida, fuerza):
@@ -93,7 +92,7 @@ class Personaje:
             json.dump(estado, f, indent=4)
         print("Partida guardada.")
 
-    def cargar_partida(self, archivo='partida.json'):
+    def cargar_partida(self, diccionario_clases, archivo='partida.json'):
         try:
             with open(archivo, 'r') as f:
                 estado = json.load(f)
@@ -106,7 +105,7 @@ class Personaje:
 
             # CORRECCIÓN 2: Eliminé las líneas repetidas que tenías aquí
             tipo = estado.get('tipo_clase', 'Personaje')
-            Clase = CLASES.get(tipo, Personaje) 
+            Clase = diccionario_clases.get(tipo, Personaje) 
             nueva = Clase(**args_init)
             
             if 'furia' in estado:
@@ -123,7 +122,6 @@ class Personaje:
             print("Partida cargada.")
         except FileNotFoundError:
             print("No hay partida guardada.")
-
 
 class Guerrero(Personaje):
     def __init__(self, nombre, vida, fuerza):
@@ -161,7 +159,7 @@ class Jefe(Personaje):
         print(f"{self.nombre} ataca con furia a {objetivo.nombre} causando {daño} de daño")
         objetivo.recibir_daño(daño)
 
-CLASES ={
+CLASES = {
     'Personaje': Personaje,
     'Enemigo': Enemigo,
     'Guerrero': Guerrero,
