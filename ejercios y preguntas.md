@@ -105,3 +105,8 @@ Esta respuesta la se, aunque tu "pista" tecnicamente da de manera directa la res
 en entidades por supuesto que es donde esta la clase guerrero, bueno y todas las demas.
 Si en main.py tienes un objeto enemigo = Enemigo(...), ¿podrías llamar a enemigo.grito_de_guerra()? ¿Por qué?
 No podria porque grito de guerra es una funcion unica de la clase guerrero, aunque, si enemigo heredara a guerrero si que podria, pero este no es el caso.
+
+
+Pregunta extra: Para que Habitacion pueda recibir un enemigo en el parámetro enemigo, ¿necesitamos importar algo de entidades.py dentro de mapa.py si solo vamos a guardar la referencia del objeto? (Pista: Recuerda lo que aprendimos de los "hijos" y los "padres" en la sesión anterior).
+
+Interesante pregunta, dice que solo se guarda una referencia, por lo que gemini mi insita a responder que no, pero siento que esa referencia en este documento esta aislada, no apunta a ninguna parte, por lo que si mañana quisiseramos, usar este objeto deberiamos importar por lo menos la clase enemigos, pero carezco de confianza para estar seguro de ninguna respuesta
