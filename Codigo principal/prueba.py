@@ -1,26 +1,27 @@
-from mapa import Habitacion, Mapa
-from entidades import Enemigo # Citando el recurso entidades.py
+# Basado estrictamente en tu archivo 'Polimorfismo y Bucle Principal del RPG.py'
+# y la clase Mapa de 'mapa.py'
 
-# 1. Creamos el Mapa
-mi_mapa = Mapa()
-mi_mapa.mover('este')
-# 2. Creamos las Habitaciones
-entrada = Habitacion("Entrada del Calabozo", "Un pasillo oscuro y húmedo.")
-sala_combate = Habitacion("Sala del Trono", "Una sala amplia con un trono de piedra.", Enemigo("Goblin", 30, 5, 10))
+# 1. El usuario escribe una dirección
+accion_usuario = input("¿Hacia dónde quieres ir? ")
 
-# 3. Las conectamos (Esto es lo que acabas de programar)
-entrada.agregar_salida("norte", sala_combate)
-sala_combate.agregar_salida("sur", entrada)
-
-# 4. Las metemos en el mapa
-mi_mapa.agregar_habitacion(entrada)
-mi_mapa.agregar_habitacion(sala_combate)
-
-# --- PRUEBA DE MOVIMIENTO ---
-print(f"Estás en: {mi_mapa.habitacion_actual.nombre}")
-
-if mi_mapa.mover("norte"):
-    print("Caminas hacia el norte...")
-    print(f"Ahora estás en: {mi_mapa.habitacion_actual.nombre}")
+# 2. El mapa intenta ejecutar el movimiento
+# 'mapa_del_juego' es una instancia de la clase Mapa
+if mapa_del_juego.mover(accion_usuario):
+    print(f"Has avanzado hacia el {accion_usuario}.")
+    # Aquí iría la lógica para comprobar si hay enemigos en la nueva sala
 else:
-    print("No puedes ir por ahí.")
+    print("No hay camino por ahí.")
+
+if mapa_del_juego.mover(accion_usuario):
+    print(f"Has avanzado hacia el {accion_usuario}.")
+    
+    # 1. Obtenemos la habitación donde estamos ahora
+    sala_actual = mapa_del_juego.habitacion_actual
+    
+    # 2. Comprobamos si el atributo 'enemigo' tiene algo (no es None)
+    if sala_actual.enemigo is not None:
+        enemigo_presente = sala_actual.enemigo
+        print(f"¡Cuidado! Un {enemigo_presente.nombre} bloquea tu camino.")
+        
+        # Aquí es donde llamaremos a tu función de combate:
+        # iniciar_combate(jugador, enemigo_presente)
