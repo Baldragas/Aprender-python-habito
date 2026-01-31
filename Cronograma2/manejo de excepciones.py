@@ -1,21 +1,23 @@
-def obtener_numero_con_intentos():
+def convertir_a_int(cadena: str):
     """
-    Solicita un entero y devuelve:
-    (numero_ingresado, intentos_realizados)
-    Si supera 3 intentos fallidos, devuelve (None, intentos).
+    Intenta convertir *cadena* a entero.
+    Devuelve (valor, ok):
+        - valor: int convertido o None
+        - ok:    True si la conversión tuvo éxito, False en caso contrario
     """
-    intentos = 0
-    while True:
-        entrada = input("Introduce un número entero: ")
-        try:
-            numero = int(entrada)
-            # ???: devuelve número y contador
-            return numero, intentos
-        except ValueError:
-            print("⚠️  Entrada no válida. Intenta de nuevo.")
-            intentos += 1
-            if intentos > 3:
-                # ???: devuelve None y contador
-                return None, intentos
+    try:
+        valor = int(cadena)
+        return valor, True
+    except ValueError:
+        return None, False
+    except TypeError:
+        return None, False
 
-obtener_numero_con_intentos()
+casos = [
+    ("123", (123, True)),      # esperado
+    ("xyz", (None, False)),    # esperado
+    (None,  (None, False))     # esperado, explicado arriba
+]
+
+for entrada, esperado in casos:
+    print(entrada, "->", convertir_a_int(entrada), "vs", esperado)
