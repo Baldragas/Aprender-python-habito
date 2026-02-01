@@ -1,5 +1,5 @@
 def normalize(texto):
-    acentos = {"á":"a", "é":"e", "í": "i", "ó": "o", "ú": "u"}
+    acentos = {"á":"a", "é":"e", "í": "i", "ó": "o", "ú": "u", "ñ": "n"}
     resultado = []
     for letra in texto.lower():
         if letra in acentos:
@@ -7,4 +7,5 @@ def normalize(texto):
         else:
             resultado.append(letra)
     return "".join(resultado)
+
 print(normalize("poción de vida"))
