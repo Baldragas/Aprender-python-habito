@@ -4,6 +4,7 @@ class Habitacion:
         self.descripcion = descripcion
         self.enemigo = enemigo
         self.salidas = {}
+        self.objetos = []
         self.visitada = False # Para el sistema de narrativa única
 
     def agregar_salida(self, direccion, habitacion_destino):

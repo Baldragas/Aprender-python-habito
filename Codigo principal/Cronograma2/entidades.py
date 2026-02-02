@@ -92,42 +92,42 @@ class Personaje:
             json.dump(estado, f, indent=4)
         print("Partida guardada.")
 
-        def cargar_partida(self, diccionario_clases, archivo='partida.json'):
-            try:
-                with open(archivo, 'r') as f:
-                    estado = json.load(f)
+    def cargar_partida(self, diccionario_clases, archivo='partida.json'):
+        try:
+            with open(archivo, 'r') as f:
+                estado = json.load(f)
 
-                args_init = {
-                    'nombre': estado.get('nombre'),
-                    'vida': estado.get('vida'),
-                    'fuerza': estado.get('fuerza')
-                    }
+            args_init = {
+                'nombre': estado.get('nombre'),
+                'vida': estado.get('vida'),
+                'fuerza': estado.get('fuerza')
+                }
 
-                tipo = estado.get('tipo_clase', 'Personaje')
-                Clase = diccionario_clases.get(tipo, Personaje) 
-                nueva = Clase(**args_init)
-                
-                # Copiar atributos de nueva a self, excepto inventario
-                for attr, value in nueva.__dict__.items():
-                    if attr != 'inventario' and hasattr(self, attr):
-                        setattr(self, attr, value)
-                
-                # Cargar atributos especiales desde el estado
-                if 'furia' in estado:
-                    self.furia = estado['furia']
-                if 'fuerza_base' in estado:
-                    self.fuerza_base = estado['fuerza_base']
-                if 'vida_max' in estado:
-                    self.vida_max = estado['vida_max']
-                
-                # Cargar inventario: actualizar el diccionario items del inventario actual
-                if 'inventario' in estado:
-                    self.inventario.items.clear()
-                    self.inventario.items.update(estado['inventario'])
-                
-                print("Partida cargada.")
-            except FileNotFoundError:
-                print("No hay partida guardada.")
+            tipo = estado.get('tipo_clase', 'Personaje')
+            Clase = diccionario_clases.get(tipo, Personaje) 
+            nueva = Clase(**args_init)
+            
+            # Copiar atributos de nueva a self, excepto inventario
+            for attr, value in nueva.__dict__.items():
+                if attr != 'inventario' and hasattr(self, attr):
+                    setattr(self, attr, value)
+            
+            # Cargar atributos especiales desde el estado
+            if 'furia' in estado:
+                self.furia = estado['furia']
+            if 'fuerza_base' in estado:
+                self.fuerza_base = estado['fuerza_base']
+            if 'vida_max' in estado:
+                self.vida_max = estado['vida_max']
+            
+            # Cargar inventario: actualizar el diccionario items del inventario actual
+            if 'inventario' in estado:
+                self.inventario.items.clear()
+                self.inventario.items.update(estado['inventario'])
+            
+            print("Partida cargada.")
+        except FileNotFoundError:
+            print("No hay partida guardada.")
 
 class Guerrero(Personaje):
     def __init__(self, nombre, vida, fuerza):
@@ -175,6 +175,3 @@ CLASES = {
     'Guerrero': Guerrero,
     'Jefe': Jefe
 }
-
-goblin = Enemigo('feo', 40, 10, 20)
-print(goblin.__repr__())
