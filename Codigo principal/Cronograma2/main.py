@@ -1,5 +1,5 @@
 from entidades import Guerrero, Enemigo, Jefe, CLASES
-from mapa import Habitacion, Mapa
+from mapa import Habitacion, Mapa, conectar_mutua
 
 def combate(jugador, enemigo):
     print(f"\n=== Combate inicia: {jugador.nombre} vs {enemigo.nombre} ===")
@@ -57,8 +57,8 @@ def main():
     
     
     # Conectamos las salas y las añadimos al mapa
-    sala_inicio.agregar_salida("norte", sala_media)
-    sala_media.agregar_salida("este", sala_boss)
+    conectar_mutua(sala_inicio, "norte", sala_media, "sur")
+    conectar_mutua(sala_media, "este", sala_boss, "oeste")
     mapa_del_juego.agregar_habitacion(sala_inicio)
     mapa_del_juego.agregar_habitacion(sala_media)
     mapa_del_juego.agregar_habitacion(sala_boss)
@@ -70,7 +70,7 @@ def main():
         print(f"\n--- {mapa_del_juego.habitacion_actual.nombre} ---")
         print(mapa_del_juego.habitacion_actual.descripcion)
 
-        accion = input("¿A dónde ir? (norte/sur/este/oeste/salir): ").lower()
+        accion = input("¿A dónde ir? (norte/sur/este/oeste/mapa/inventario/salir): ").lower()
 
         if accion == "salir":
             jugador.guardar_partida()
@@ -80,8 +80,13 @@ def main():
             jugador.mostrar_inventario()
             continue
 
+        if accion == "mapa":
+            print(mapa_del_juego.dibujar_mapa_bonito())
+            continue
+
         if mapa_del_juego.mover(accion):
             sala_actual = mapa_del_juego.habitacion_actual
+            sala_actual.visitada = True
             
             # ¿Hay alguien aquí para pelear?
             if sala_actual.enemigo is not None:
