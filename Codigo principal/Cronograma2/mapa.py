@@ -63,5 +63,7 @@ def conectar_mutua(hab1, direccion1, hab2, direccion2):
     """Conecta dos habitaciones en ambas direcciones."""
     hab1.agregar_salida(direccion1, hab2)
     hab2.agregar_salida(direccion2, hab1)
+
+print("Recuerda, implementar mejoras de mapa")
     
     
