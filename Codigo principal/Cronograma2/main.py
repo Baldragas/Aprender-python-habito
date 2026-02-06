@@ -48,14 +48,18 @@ def main():
     
     # Creamos al enemigo y lo metemos EN la habitación
     dragon = Jefe("Dragón Ancianor", 200, 30)
-    goblin = Enemigo("Goblin de polvo", 20, 10, 5) 
+    goblin = Enemigo("Goblin de polvo", 40, 10, 5)
+    goblin._vida = 8
 
     # Ejemplo de creación de sala con enemigo
     sala_inicio = Habitacion("Entrada", "Una cueva oscura.")
     sala_media = Habitacion("Cuarto abandonado","Un cuarto polvoriento y oscuro", enemigo=goblin)
     sala_boss = Habitacion("Altar", "El cubil del dragón.", enemigo=dragon)
     
-    
+    # Añadir objetos a las salas:
+    sala_inicio.objetos.extend(["poción pequeña", "llave oxidada"])
+    sala_media.objetos.append("espada rota")
+
     # Conectamos las salas y las añadimos al mapa
     conectar_mutua(sala_inicio, "norte", sala_media, "sur")
     conectar_mutua(sala_media, "este", sala_boss, "oeste")
@@ -77,7 +81,18 @@ def main():
             break
         
         if accion == "inventario":
-            jugador.mostrar_inventario()
+            if jugador.mostrar_inventario():
+                while True:
+                    usar = input("¿Quieres usar algo? (s/n)").lower().strip()
+                    if usar in ("s", "si", "sí", "y", "yes"):
+                        item = input("¿Qué item quieres usar?: ").strip()
+                        jugador.usar_item(item, 1)
+                        break
+                    elif usar in ("n", "no", "salir"):
+                        print("Volviendo al menú principal.")
+                        break
+                    else:
+                        print("Respuesta no reconocida. Escribe 's' (sí) o 'n' (no).")
             continue
 
         if accion == "mapa":

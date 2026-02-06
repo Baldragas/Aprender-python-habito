@@ -56,7 +56,8 @@ class Personaje:
             print(f"No tienes suficiente {nombre} para gastar")
 
     def mostrar_inventario(self):
-        print(self.inventario) 
+        print(self.inventario)
+        return bool(self.inventario.items)
     
     def recibir_daño(self, cantidad):
         daño_real = cantidad
