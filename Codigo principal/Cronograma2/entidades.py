@@ -46,14 +46,19 @@ class Personaje:
 
     def usar_item(self, nombre, cantidad=1):
         key = normalize(nombre)
-        if self.inventario.quitar_item(key, cantidad):
-            print(f"{self.nombre} usa {cantidad} {nombre}")
-            if "pocion de vida" in key:
-                curacion = 40 * cantidad
-                self._vida = min(self.vida_max, self._vida + curacion)
-                print(f"{self.nombre} recupera {curacion} de vida, ahora tiene {self._vida}")
-        else:
-            print(f"No tienes suficiente {nombre} para gastar")
+        if key not in self.inventario or self.invetario[key] < cantidad:
+            print(f"No tienes suficiente {nombre}")
+            return False
+
+        if "pocion de vida" in key:
+            curacion = 40 * cantidad
+            self._vida = min(self.vida_max, self._vida + curacion)
+            print(f"{self.nombre} recupera {curacion} de vida, ahora tiene {self._vida}")
+            return True
+
+        self.inventario.quitar_item(key, cantidad)
+        print(f"Usas {nombre}, pero no tiene efecto especial aún.")
+        return True
 
     def mostrar_inventario(self):
         print(self.inventario)

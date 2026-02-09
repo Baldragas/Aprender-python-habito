@@ -1,5 +1,6 @@
 from entidades import Guerrero, Enemigo, Jefe, CLASES
 from mapa import Habitacion, Mapa, conectar_mutua
+from objetos import Item
 
 def combate(jugador, enemigo):
     print(f"\n=== Combate inicia: {jugador.nombre} vs {enemigo.nombre} ===")
@@ -42,6 +43,14 @@ def main():
     jugador = Guerrero("Conan", 120, 40)
     jugador.cargar_partida(CLASES)
     jugador.añadir_al_inventario("Poción de vida", 5)
+
+    # En main(), después de crear el jugador:
+    pocion_menor = Item.crear_pocion_menor()
+    pocion_mayor = Item.crear_pocion_mayor()
+
+    print(f"Item creado: {pocion_menor}")
+    print(f"Tipo: {pocion_menor.tipo}")
+    print(f"Propiedades: {pocion_menor.propiedades}")
 
     # 2. CONFIGURACIÓN DEL MUNDO (Esto es lo que faltaba conectar)
     mapa_del_juego = Mapa()
