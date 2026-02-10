@@ -1,12 +1,13 @@
 {
     "nombre": "Conan",
-    "vida": 20.0,
+    "vida": 120,
     "vida_max": 120,
     "fuerza": 40,
-    "furia": 11,
+    "furia": 4,
     "fuerza_base": null,
     "tipo_clase": "Guerrero",
     "inventario": {
-        "pocion de vida": 27
+        "pocion de vida": 25,
+        "pocion menor": 9
     }
 }

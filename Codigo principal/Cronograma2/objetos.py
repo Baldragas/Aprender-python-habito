@@ -1,10 +1,14 @@
-# Archivo: objetos.py (CREAR NUEVO)
+
 class Item:
     def __init__(self, nombre, tipo, valor=0, **kwargs):
         self.nombre = nombre
         self.tipo = tipo  # 'poción', 'arma', 'comida', 'llave'
         self.valor = valor
         self.propiedades = kwargs
+    
+    def es_pocion(self):
+        tipo = self.tipo.lower().replace('ó', 'o')
+        return tipo == 'pocion' and 'curacion' in self.propiedades
     
     def usar(self, jugador):
         """Efecto al usar el item"""
@@ -20,6 +24,9 @@ class Item:
         else:
             print(f"No puedes usar {self.nombre} directamente.")
             return False
+    
+    def __str__(self):
+        return f"{self.nombre} (tipo: {self.tipo})"
     
     @staticmethod
     def crear_pocion_menor():

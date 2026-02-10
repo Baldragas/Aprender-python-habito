@@ -1,5 +1,6 @@
 import unicodedata
 import json
+from objetos import Item
 
 def normalize(text: str) -> str:
     return unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('ascii').lower()
@@ -7,7 +8,7 @@ def normalize(text: str) -> str:
 class Inventario:
     def __init__(self):
         self.items = {}
-    
+
     def agregar_item(self, nombre, cantidad=1):
         key = normalize(nombre)
         if key in self.items:
@@ -37,23 +38,44 @@ class Personaje:
         self._vida = vida
         self.fuerza = fuerza
         self.inventario = Inventario()
-        # CORRECCIÓN 1: La vida máxima es igual a la vida con la que nace el personaje
         self.vida_max = vida 
-    
+        self.items_objetos = {}
+
+    def añadir_item_objeto(self, item_obj, cantidad=1):
+        print(f"{self.nombre} encuentra {cantidad} {item_obj.nombre}")
+        # Por ahora, solo prueba almacenando como string
+        self.inventario.agregar_item(item_obj.nombre, cantidad)
+        print(f"(Objeto Item detectado: cura {item_obj.propiedades.get('curacion', 0)})")
+        key = normalize(item_obj.nombre)
+        self.items_objetos[key] = item_obj
+        
     def añadir_al_inventario(self, nombre, cantidad=1):
         print(f"{self.nombre} encuentra {cantidad} {nombre}")
         self.inventario.agregar_item(nombre, cantidad)
 
     def usar_item(self, nombre, cantidad=1):
         key = normalize(nombre)
-        if key not in self.inventario or self.invetario[key] < cantidad:
+        if key not in self.inventario.items or self.inventario.items[key] < cantidad:
             print(f"No tienes suficiente {nombre}")
             return False
+            
+        if key in self.items_objetos:
+            item_obj = self.items_objetos[key]
+        # DEBUG TEMPORAL
+            print(f"🔍 DEBUG: key={key}, tipo={item_obj.tipo}, es_pocion={item_obj.es_pocion()}")
+            print(f"🔍 propiedades: {item_obj.propiedades}")
+            if item_obj.es_pocion():
+                curacion = item_obj.propiedades['curacion'] * cantidad
+                self._vida = min(self.vida_max, self._vida + curacion)
+                self.inventario.quitar_item(key, cantidad)
+                print(f"✨ {self.nombre} usa {nombre} y cura {curacion} (sistema nuevo)!")
+                return True
 
         if "pocion de vida" in key:
             curacion = 40 * cantidad
             self._vida = min(self.vida_max, self._vida + curacion)
-            print(f"{self.nombre} recupera {curacion} de vida, ahora tiene {self._vida}")
+            self.inventario.quitar_item(key, cantidad)  # ¡FALTA ESTA LÍNEA!
+            print(f"⚙️ {self.nombre} recupera {curacion} de vida (sistema viejo)")
             return True
 
         self.inventario.quitar_item(key, cantidad)

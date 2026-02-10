@@ -45,12 +45,8 @@ def main():
     jugador.añadir_al_inventario("Poción de vida", 5)
 
     # En main(), después de crear el jugador:
-    pocion_menor = Item.crear_pocion_menor()
-    pocion_mayor = Item.crear_pocion_mayor()
-
-    print(f"Item creado: {pocion_menor}")
-    print(f"Tipo: {pocion_menor.tipo}")
-    print(f"Propiedades: {pocion_menor.propiedades}")
+    pocion = Item.crear_pocion_menor()
+    jugador.añadir_item_objeto(pocion, 2)
 
     # 2. CONFIGURACIÓN DEL MUNDO (Esto es lo que faltaba conectar)
     mapa_del_juego = Mapa()
