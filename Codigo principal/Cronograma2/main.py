@@ -42,8 +42,10 @@ def main():
     # 1. CONFIGURACIÓN DEL PERSONAJE
     jugador = Guerrero("Conan", 120, 40)
     jugador.cargar_partida(CLASES)
-    jugador.añadir_al_inventario("Poción de vida", 5)
 
+    escudo = Item.crear_escudo()
+    print(f"Escudo creado: {escudo}")
+    print(f"Protección: {escudo.propiedades.get('proteccion', 0)}")
     # En main(), después de crear el jugador:
     pocion = Item.crear_pocion_menor()
     jugador.añadir_item_objeto(pocion, 2)
@@ -54,7 +56,6 @@ def main():
     # Creamos al enemigo y lo metemos EN la habitación
     dragon = Jefe("Dragón Ancianor", 200, 30)
     goblin = Enemigo("Goblin de polvo", 40, 10, 5)
-    goblin._vida = 8
 
     # Ejemplo de creación de sala con enemigo
     sala_inicio = Habitacion("Entrada", "Una cueva oscura.")

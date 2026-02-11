@@ -35,3 +35,7 @@ class Item:
     @staticmethod
     def crear_pocion_mayor():
         return Item("Poción mayor", "poción", valor=30, curacion=60)
+    
+    @staticmethod
+    def crear_escudo():
+        return Item("Escudo de madera", "defensa", valor=15, proteccion=5)
