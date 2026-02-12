@@ -17,3 +17,10 @@ print("3.", Guerrero("Conan"))
 
 palabra = "Tu quiere sexo mami?"
 print(f"{palabra:10.10}")
+
+def mostrar_info(**kwargs):
+    # Completa: ¿Cómo iterar sobre kwargs?
+    for clave, valor in kwargs.items():
+        print(f"{clave}: {valor}")
+
+mostrar_info(vida=100, fuerza=20, defensa=5)

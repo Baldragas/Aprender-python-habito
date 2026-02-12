@@ -4,8 +4,17 @@ class Item:
         self.nombre = nombre
         self.tipo = tipo  # 'poción', 'arma', 'comida', 'llave'
         self.valor = valor
-        self.propiedades = kwargs
-    
+
+        propiedades_permitidas =['curacion', 'daño', 'proteccion', 'duracion']
+
+        self.propiedades = {}
+
+        for key, value in kwargs.items():
+            if key in propiedades_permitidas:
+                self.propiedades[key] = value
+            else:
+                print(f"⚠️ Propiedad '{key}' no permitida para Item")
+
     def es_pocion(self):
         tipo = self.tipo.lower().replace('ó', 'o')
         return tipo == 'pocion' and 'curacion' in self.propiedades
