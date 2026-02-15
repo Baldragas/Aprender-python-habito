@@ -68,15 +68,8 @@ class Personaje:
                 curacion = item_obj.propiedades['curacion'] * cantidad
                 self._vida = min(self.vida_max, self._vida + curacion)
                 self.inventario.quitar_item(key, cantidad)
-                print(f"✨ {self.nombre} usa {nombre} y cura {curacion} (sistema nuevo)!")
+                print(f"✨ {self.nombre} usa {nombre} y cura {curacion} ahora tiene {self._vida}!")
                 return True
-
-        if "pocion de vida" in key:
-            curacion = 40 * cantidad
-            self._vida = min(self.vida_max, self._vida + curacion)
-            self.inventario.quitar_item(key, cantidad)  # ¡FALTA ESTA LÍNEA!
-            print(f"⚙️ {self.nombre} recupera {curacion} de vida (sistema viejo)")
-            return True
 
         self.inventario.quitar_item(key, cantidad)
         print(f"Usas {nombre}, pero no tiene efecto especial aún.")

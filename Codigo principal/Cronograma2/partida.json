@@ -3,11 +3,11 @@
     "vida": 120,
     "vida_max": 120,
     "fuerza": 40,
-    "furia": 4,
+    "furia": 3,
     "fuerza_base": null,
     "tipo_clase": "Guerrero",
     "inventario": {
-        "pocion de vida": 25,
-        "pocion menor": 9
+        "pocion menor": 2,
+        "pocion de vida": 5
     }
 }

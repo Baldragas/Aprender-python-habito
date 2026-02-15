@@ -48,5 +48,3 @@ class Item:
     @staticmethod
     def crear_escudo():
         return Item("Escudo de madera", "defensa", valor=15, proteccion=5)
-
-    print("recuerda programar mañana")

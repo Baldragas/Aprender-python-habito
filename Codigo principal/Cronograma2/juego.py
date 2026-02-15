@@ -1,0 +1,99 @@
+import entidades
+import mapa
+from combate import combate
+
+class Juego:
+    def __init__(self):
+        self.jugador = None
+        self.mapa = None
+        self.jugando = True
+    
+    def configurar(self):
+        # Crea el jugador y el mapa (similar a lo que hacías en main)
+        self.jugador = entidades.Guerrero("Conan", 120, 40)
+        self.jugador.cargar_partida(entidades.CLASES)
+        self.mapa = mapa.Mapa()
+
+        escudo = entidades.Item.crear_escudo()
+        print(f"Escudo creado: {escudo}")
+        print(f"Protección: {escudo.propiedades.get('proteccion', 0)}")
+        
+        pocion = entidades.Item.crear_pocion_menor()
+        self.jugador.añadir_item_objeto(pocion, 2)
+        pocion_vida = entidades.Item("Poción de vida", "pocion", valor=5, curacion=40)
+        self.jugador.añadir_item_objeto(pocion_vida, 5)
+
+        dragon = entidades.Jefe("Dragón Ancianor", 200, 30)
+        goblin = entidades.Enemigo("Goblin de polvo", 40, 10, 5)
+
+        sala_inicio = mapa.Habitacion("Entrada", "Una cueva oscura.")
+        sala_media = mapa.Habitacion("Cuarto abandonado","Un cuarto polvoriento y oscuro", enemigo=goblin)
+        sala_boss = mapa.Habitacion("Altar", "El cubil del dragón.", enemigo=dragon)
+        
+        # Añadir objetos a las salas:
+        sala_inicio.objetos.extend(["poción pequeña", "llave oxidada"])
+        sala_media.objetos.append("espada rota")
+
+        # Conectamos las salas y las añadimos al mapa
+        mapa.conectar_mutua(sala_inicio, "norte", sala_media, "sur")
+        mapa.conectar_mutua(sala_media, "este", sala_boss, "oeste")
+
+        self.mapa.agregar_habitacion(sala_inicio)
+        self.mapa.agregar_habitacion(sala_media)
+        self.mapa.agregar_habitacion(sala_boss)
+        self.mapa.habitacion_actual = sala_inicio
+    
+    def bucle_principal(self):
+        while self.jugando and self.jugador.esta_vivo():
+            print(f"\n--- {self.mapa.habitacion_actual.nombre} ---")
+            print(self.mapa.habitacion_actual.descripcion)
+
+            accion = input("¿A dónde ir? (norte/sur/este/oeste/mapa/inventario/salir): ").lower()
+
+            if accion == "salir":
+                self.jugador.guardar_partida()
+                break
+            
+            if accion == "inventario":
+                if self.jugador.mostrar_inventario():
+                    while True:
+                        usar = input("¿Quieres usar algo? (s/n)").lower().strip()
+                        if usar in ("s", "si", "sí", "y", "yes"):
+                            item = input("¿Qué item quieres usar?: ").strip()
+                            self.jugador.usar_item(item, 1)
+                            break
+                        elif usar in ("n", "no", "salir"):
+                            print("Volviendo al menú principal.")
+                            break
+                        else:
+                            print("Respuesta no reconocida. Escribe 's' (sí) o 'n' (no).")
+                continue
+
+            if accion == "mapa":
+                print(self.mapa.dibujar_mapa_bonito())
+                continue
+
+            if self.mapa.mover(accion):
+                sala_actual = self.mapa.habitacion_actual
+                sala_actual.visitada = True
+                
+                # ¿Hay alguien aquí para pelear?
+                if sala_actual.enemigo is not None:
+                    enemigo_presente = sala_actual.enemigo
+                    print(f"¡Un {enemigo_presente.nombre} aparece!")
+                    
+                    # LLAMADA AL COMBATE
+                    combate(self.jugador, enemigo_presente)
+                    
+                    if not enemigo_presente.esta_vivo():
+                        # Si el enemigo muere, lo quitamos de la  para que no "reviva" al volver
+                        sala_actual.enemigo = None 
+                        self.jugador.guardar_partida()
+                    elif not self.jugador.esta_vivo():
+                        print("Has caído en batalla...")
+                        break
+            else:
+                print("No hay salida en esa dirección.")
+
+        print("Fin de la aventura.")
+                # Usa self.jugador y self.mapa
