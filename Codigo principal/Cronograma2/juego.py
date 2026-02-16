@@ -7,37 +7,66 @@ class Juego:
         self.jugador = None
         self.mapa = None
         self.jugando = True
-    
+
     def configurar(self):
-        # Crea el jugador y el mapa (similar a lo que hacías en main)
+        self._crear_jugador()
+        self._crear_items_iniciales()
+        enemigos = self._crear_enemigos()
+        self._crear_mapa_y_habitaciones(enemigos)
+
+    # ------------------------------------------------------------
+    # MÉTODOS AUXILIARES (privados)
+    # ------------------------------------------------------------
+    def _crear_jugador(self):
         self.jugador = entidades.Guerrero("Conan", 120, 40)
         self.jugador.cargar_partida(entidades.CLASES)
-        self.mapa = mapa.Mapa()
 
+    def _crear_items_iniciales(self):
+        # Escudo (nuevo: se añade al inventario)
         escudo = entidades.Item.crear_escudo()
-        print(f"Escudo creado: {escudo}")
-        print(f"Protección: {escudo.propiedades.get('proteccion', 0)}")
-        
-        pocion = entidades.Item.crear_pocion_menor()
-        self.jugador.añadir_item_objeto(pocion, 2)
+        self.jugador.añadir_item_objeto(escudo, 1)
+        print(f"Escudo añadido: {escudo} (protección {escudo.propiedades.get('proteccion', 0)})")
+
+        # Pociones
+        pocion_menor = entidades.Item.crear_pocion_menor()
+        self.jugador.añadir_item_objeto(pocion_menor, 2)
+
         pocion_vida = entidades.Item("Poción de vida", "pocion", valor=5, curacion=40)
         self.jugador.añadir_item_objeto(pocion_vida, 5)
 
+    def _crear_enemigos(self):
         dragon = entidades.Jefe("Dragón Ancianor", 200, 30)
         goblin = entidades.Enemigo("Goblin de polvo", 40, 10, 5)
+        # Podríamos devolver un dict para identificarlos fácilmente
+        return {
+            "dragon": dragon,
+            "goblin": goblin
+        }
 
+    def _crear_mapa_y_habitaciones(self, enemigos):
+        # Crear habitaciones con los enemigos
         sala_inicio = mapa.Habitacion("Entrada", "Una cueva oscura.")
-        sala_media = mapa.Habitacion("Cuarto abandonado","Un cuarto polvoriento y oscuro", enemigo=goblin)
-        sala_boss = mapa.Habitacion("Altar", "El cubil del dragón.", enemigo=dragon)
-        
-        # Añadir objetos a las salas:
+        sala_media = mapa.Habitacion(
+            "Cuarto abandonado",
+            "Un cuarto polvoriento y oscuro",
+            enemigo=enemigos["goblin"]
+        )
+        sala_boss = mapa.Habitacion(
+            "Altar",
+            "El cubil del dragón.",
+            enemigo=enemigos["dragon"]
+        )
+
+        # Añadir objetos a las salas
         sala_inicio.objetos.extend(["poción pequeña", "llave oxidada"])
         sala_media.objetos.append("espada rota")
 
-        # Conectamos las salas y las añadimos al mapa
+        # Conectar habitaciones
         mapa.conectar_mutua(sala_inicio, "norte", sala_media, "sur")
         mapa.conectar_mutua(sala_media, "este", sala_boss, "oeste")
 
+        # Agregar al mapa
+        self.mapa = mapa.Mapa()
         self.mapa.agregar_habitacion(sala_inicio)
         self.mapa.agregar_habitacion(sala_media)
         self.mapa.agregar_habitacion(sala_boss)

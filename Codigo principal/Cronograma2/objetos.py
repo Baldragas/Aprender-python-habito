@@ -21,11 +21,14 @@ class Item:
     
     def usar(self, jugador):
         """Efecto al usar el item"""
-        if self.tipo == 'poción':
+        if self.tipo == 'pocion':
             # ¡HUECO 2! Acceder a 'curacion' en propiedades (default 20)
             curacion = self.propiedades.get('curacion', 20)
             jugador._vida = min(jugador.vida_max, jugador._vida + curacion)
             print(f"¡Usas {self.nombre} y recuperas {curacion} de vida!")
+            return True
+        elif self.tipo == 'defensa':
+            print(f"Te proteges con {self.nombre}, por ahora no pasa nada")
             return True
         elif self.tipo == 'comida':
             print(f"Comes {self.nombre}. Sabe bien.")

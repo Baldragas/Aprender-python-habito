@@ -55,25 +55,25 @@ class Personaje:
 
     def usar_item(self, nombre, cantidad=1):
         key = normalize(nombre)
+        
+        # Verificar si tenemos suficiente cantidad
         if key not in self.inventario.items or self.inventario.items[key] < cantidad:
             print(f"No tienes suficiente {nombre}")
             return False
-            
+
+        # Intentar obtener el objeto Item asociado
         if key in self.items_objetos:
             item_obj = self.items_objetos[key]
-        # DEBUG TEMPORAL
-            print(f"🔍 DEBUG: key={key}, tipo={item_obj.tipo}, es_pocion={item_obj.es_pocion()}")
-            print(f"🔍 propiedades: {item_obj.propiedades}")
-            if item_obj.es_pocion():
-                curacion = item_obj.propiedades['curacion'] * cantidad
-                self._vida = min(self.vida_max, self._vida + curacion)
-                self.inventario.quitar_item(key, cantidad)
-                print(f"✨ {self.nombre} usa {nombre} y cura {curacion} ahora tiene {self._vida}!")
-                return True
 
-        self.inventario.quitar_item(key, cantidad)
-        print(f"Usas {nombre}, pero no tiene efecto especial aún.")
-        return True
+            if item_obj.usar(self): 
+                self.inventario.quitar_item(key, cantidad)  # ¿Qué clave usamos?
+                return True
+            else:
+                return False
+        else:
+            self.inventario.quitar_item(key, cantidad)
+            print(f"Usas {nombre}, pero no tiene efecto especial aún.")
+            return True
 
     def mostrar_inventario(self):
         print(self.inventario)
