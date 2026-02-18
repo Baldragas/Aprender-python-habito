@@ -37,10 +37,12 @@ class Juego:
     def _crear_enemigos(self):
         dragon = entidades.Jefe("Dragón Ancianor", 200, 30)
         goblin = entidades.Enemigo("Goblin de polvo", 40, 10, 5)
+        slime = entidades.Enemigo("Slime mediano", 60, 20, 15)
         # Podríamos devolver un dict para identificarlos fácilmente
         return {
             "dragon": dragon,
-            "goblin": goblin
+            "goblin": goblin,
+            "slime": slime
         }
 
     def _crear_mapa_y_habitaciones(self, enemigos):
@@ -51,6 +53,9 @@ class Juego:
             "Un cuarto polvoriento y oscuro",
             enemigo=enemigos["goblin"]
         )
+        sala_oeste = mapa.Habitacion("Sala de slimes", 
+        "Una sala en ruinas invadida, por telas de araña y slime's",
+        enemigo=enemigos["slime"])
         sala_boss = mapa.Habitacion(
             "Altar",
             "El cubil del dragón.",
@@ -64,6 +69,7 @@ class Juego:
         # Conectar habitaciones
         mapa.conectar_mutua(sala_inicio, "norte", sala_media, "sur")
         mapa.conectar_mutua(sala_media, "este", sala_boss, "oeste")
+        mapa.conectar_mutua(sala_media, "oeste", sala_oeste, "este")
 
         # Agregar al mapa
         self.mapa = mapa.Mapa()
