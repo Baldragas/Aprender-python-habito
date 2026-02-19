@@ -20,7 +20,6 @@ class Juego:
     def _crear_jugador(self):
         self.jugador = entidades.Guerrero("Conan", 120, 40)
         self.jugador.cargar_partida(entidades.CLASES)
-
     def _crear_items_iniciales(self):
         # Escudo (nuevo: se añade al inventario)
         escudo = entidades.Item.crear_escudo()
@@ -54,7 +53,7 @@ class Juego:
             enemigo=enemigos["goblin"]
         )
         sala_oeste = mapa.Habitacion("Sala de slimes", 
-        "Una sala en ruinas invadida, por telas de araña y slime's",
+        "Una sala en ruinas invadida por telas de araña y slime's",
         enemigo=enemigos["slime"])
         sala_boss = mapa.Habitacion(
             "Altar",

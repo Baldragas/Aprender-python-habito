@@ -34,12 +34,20 @@ class Inventario:
 
 class Personaje:
     def __init__(self, nombre, vida, fuerza):
+        if vida <= 0:
+            raise ValueError("La vida debe ser mayor a cero (fue {vida})")
+        
+        # Validar fuerza
+        if fuerza < 1:  # Asumimos que fuerza mínima es 1
+            raise ValueError("La fuerza debe ser al menos 1")
+        
         self.nombre = nombre
         self._vida = vida
         self.fuerza = fuerza
         self.inventario = Inventario()
-        self.vida_max = vida 
         self.items_objetos = {}
+        self.vida_max = vida
+
 
     def añadir_item_objeto(self, item_obj, cantidad=1):
         print(f"{self.nombre} encuentra {cantidad} {item_obj.nombre}")
