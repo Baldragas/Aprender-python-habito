@@ -47,7 +47,19 @@ class Personaje:
         self.inventario = Inventario()
         self.items_objetos = {}
         self.vida_max = vida
-
+    def curar(self, cantidad):
+        """
+        Aumenta la vida del personaje en 'cantidad' sin superar vida_max.
+        Devuelve la cantidad real de vida recuperada.
+        """
+        vida_anterior = self._vida
+        self._vida = min(self.vida_max, self._vida + cantidad)
+        recuperado = self._vida - vida_anterior
+        if recuperado > 0:
+            print(f"{self.nombre} recupera {recuperado} puntos de vida.")
+        else:
+            print(f"{self.nombre} ya está al máximo de vida.")
+        return recuperado
 
     def añadir_item_objeto(self, item_obj, cantidad=1):
         print(f"{self.nombre} encuentra {cantidad} {item_obj.nombre}")

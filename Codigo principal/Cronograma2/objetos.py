@@ -20,16 +20,17 @@ class Item:
         return tipo == 'pocion' and 'curacion' in self.propiedades
     
     def usar(self, jugador):
-        """Efecto al usar el item"""
-        if self.tipo == 'pocion':
-            # ¡HUECO 2! Acceder a 'curacion' en propiedades (default 20)
+        tipo = self.tipo.lower().replace('ó', 'o')
+        if tipo == 'pocion':
             curacion = self.propiedades.get('curacion', 20)
-            jugador._vida = min(jugador.vida_max, jugador._vida + curacion)
+            jugador.curar(curacion)
             print(f"¡Usas {self.nombre} y recuperas {curacion} de vida!")
             return True
+
         elif self.tipo == 'defensa':
             print(f"Te proteges con {self.nombre}, por ahora no pasa nada")
             return True
+
         elif self.tipo == 'comida':
             print(f"Comes {self.nombre}. Sabe bien.")
             return True
@@ -46,7 +47,7 @@ class Item:
     
     @staticmethod
     def crear_pocion_mayor():
-        return Item("Poción mayor", "poción", valor=30, curacion=60)
+        return Item("Poción mayor", "pocion", valor=30, curacion=60)
     
     @staticmethod
     def crear_escudo():
