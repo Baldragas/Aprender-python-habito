@@ -1,6 +1,7 @@
 import entidades
 import mapa
 from combate import combate
+from entidades import normalize
 
 class Juego:
     def __init__(self):
@@ -76,24 +77,50 @@ class Juego:
         self.mapa.agregar_habitacion(sala_media)
         self.mapa.agregar_habitacion(sala_boss)
         self.mapa.habitacion_actual = sala_inicio
-    
+
+    def _examinar_habitacion(self):
+        sala = self.mapa.habitacion_actual  # ¿Cómo obtenemos la sala actual?
+        if not sala.objetos:
+            print("No hay objetos aquí.")
+        else:
+            print("Ves en el suelo:")
+            for objeto in sala.objetos:
+                print(f"  - {objeto}")  # ¿Qué mostramos?
+
+    def _recoger_objeto(self, nombre_objeto):
+        sala = self.mapa.habitacion_actual
+        # Buscar el objeto en la lista (case-insensitive)
+        encontrado = None
+        for obj in sala.objetos:
+            if obj.lower() == nombre_objeto.lower():
+                encontrado = obj
+                break
+        
+        if encontrado:
+            # Quitar de la habitación
+            sala.objetos.remove(encontrado)  # ¿Qué método de lista usamos?
+            # Añadir al inventario del jugador
+            self.jugador.añadir_al_inventario(encontrado, 1)
+            print(f"Recoges {encontrado}.")
+        else:
+            print(f"No ves '{nombre_objeto}' aquí.")
+
     def bucle_principal(self):
         while self.jugando and self.jugador.esta_vivo():
             print(f"\n--- {self.mapa.habitacion_actual.nombre} ---")
             print(self.mapa.habitacion_actual.descripcion)
-
-            accion = input("¿A dónde ir? (norte/sur/este/oeste/mapa/inventario/salir): ").lower()
-
+            print("Comandos: norte/sur/este/oeste/mapa/inventario/examinar/recoger <objeto>/salir")
+            accion = normalize(input("¿A dónde ir?: "))
             if accion == "salir":
                 self.jugador.guardar_partida()
                 break
             
-            if accion == "inventario":
+            elif accion == "inventario":
                 if self.jugador.mostrar_inventario():
                     while True:
                         usar = input("¿Quieres usar algo? (s/n)").lower().strip()
                         if usar in ("s", "si", "sí", "y", "yes"):
-                            item = input("¿Qué item quieres usar?: ").strip()
+                            item = normalize(input("¿Qué item quieres usar?: "))
                             self.jugador.usar_item(item, 1)
                             break
                         elif usar in ("n", "no", "salir"):
@@ -103,11 +130,18 @@ class Juego:
                             print("Respuesta no reconocida. Escribe 's' (sí) o 'n' (no).")
                 continue
 
-            if accion == "mapa":
+            elif accion == "mapa":
                 print(self.mapa.dibujar_mapa_bonito())
                 continue
 
-            if self.mapa.mover(accion):
+            elif accion == "examinar":
+                self._examinar_habitacion()
+
+            elif accion.startswith("recoger "):
+                nombre_objeto = accion[8:].strip()
+                self._recoger_objeto(nombre_objeto)
+
+            elif self.mapa.mover(accion):
                 sala_actual = self.mapa.habitacion_actual
                 sala_actual.visitada = True
                 
