@@ -9,6 +9,16 @@ class Juego:
         self.mapa = None
         self.jugando = True
 
+    def validar_item(self, nombre_objeto: str) -> bool:
+        """
+        Devuelve True si el ítem está disponible en la habitación actual.
+        """
+        sala = self.mapa.habitacion_actual
+        # Normalizamos el nombre para comparar sin mayúsculas/minúsculas
+        nombre_norm = normalize(nombre_objeto)
+        return any(obj.lower() == nombre_norm for obj in sala.objetos)
+        
+
     def configurar(self):
         self._crear_jugador()
         self._crear_items_iniciales()
