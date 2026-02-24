@@ -1,3 +1,4 @@
+from entidades import normalize
 class Habitacion:
     def __init__(self, nombre, descripcion, enemigo=None):
         self.nombre = nombre

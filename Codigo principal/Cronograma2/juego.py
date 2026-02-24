@@ -16,7 +16,7 @@ class Juego:
         sala = self.mapa.habitacion_actual
         # Normalizamos el nombre para comparar sin mayúsculas/minúsculas
         nombre_norm = normalize(nombre_objeto)
-        return any(obj.lower() == nombre_norm for obj in sala.objetos)
+        return any(normalize(obj) == nombre_norm for obj in sala.objetos)
         
 
     def configurar(self):
@@ -97,30 +97,30 @@ class Juego:
             for objeto in sala.objetos:
                 print(f"  - {objeto}")  # ¿Qué mostramos?
 
-    def _recoger_objeto(self, nombre_objeto):
+    def recoger_objeto(self, nombre_objeto):
         sala = self.mapa.habitacion_actual
         # Buscar el objeto en la lista (case-insensitive)
         encontrado = None
         for obj in sala.objetos:
             if obj.lower() == nombre_objeto.lower():
-                encontrado = obj
+                encontrado = (obj)
                 break
         
         if encontrado:
-            # Quitar de la habitación
-            sala.objetos.remove(encontrado)  # ¿Qué método de lista usamos?
-            # Añadir al inventario del jugador
-            self.jugador.añadir_al_inventario(encontrado, 1)
-            print(f"Recoges {encontrado}.")
+            if self.validar_item(encontrado):
+                sala.objetos.remove(encontrado)
+                if self.jugador.añadir_al_inventario(encontrado, 1):
+                    print(f"Recoges {encontrado}.")
+            else:
+                print(f"No puedes recoger «{encontrado}» ahora.")
         else:
-            print(f"No ves '{nombre_objeto}' aquí.")
-
+            print(f"No hay ningún {nombre_objeto} aquí")
     def bucle_principal(self):
         while self.jugando and self.jugador.esta_vivo():
             print(f"\n--- {self.mapa.habitacion_actual.nombre} ---")
             print(self.mapa.habitacion_actual.descripcion)
             print("Comandos: norte/sur/este/oeste/mapa/inventario/examinar/recoger <objeto>/salir")
-            accion = normalize(input("¿A dónde ir?: "))
+            accion = (input("¿A dónde ir?: "))
             if accion == "salir":
                 self.jugador.guardar_partida()
                 break
@@ -149,7 +149,7 @@ class Juego:
 
             elif accion.startswith("recoger "):
                 nombre_objeto = accion[8:].strip()
-                self._recoger_objeto(nombre_objeto)
+                self.recoger_objeto(nombre_objeto)
 
             elif self.mapa.mover(accion):
                 sala_actual = self.mapa.habitacion_actual
