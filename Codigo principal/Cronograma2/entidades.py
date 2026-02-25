@@ -75,7 +75,7 @@ class Personaje:
 
     def usar_item(self, nombre, cantidad=1):
         key = normalize(nombre)
-        
+
         # Verificar si tenemos suficiente cantidad
         if key not in self.inventario.items or self.inventario.items[key] < cantidad:
             print(f"No tienes suficiente {nombre}")
@@ -85,12 +85,26 @@ class Personaje:
         if key in self.items_objetos:
             item_obj = self.items_objetos[key]
 
-            if item_obj.usar(self): 
-                self.inventario.quitar_item(key, cantidad)  # ¿Qué clave usamos?
-                return True
+            if item_obj == 'pocion':                     # caso 'poción'
+                # curar al personaje usando la propiedad 'curacion' del ítem
+                cur = item_obj.propiedades.get('curacion', 0) * cantidad
+                self.curar(cur)
+            elif item_obj == 'defensa':                   # caso 'defensa'
+                # aumentar protección temporal
+                prot = item_obj.propiedades.get('defensa', 0) * cantidad
+                self.proteccion = getattr(self, 'proteccion', 0) + prot
+                print(f"Ganas +{prot} de protección.")
+            elif item_obj == 'comida':                   # caso 'comida'
+                print(f"Consumes {nombre}.")
             else:
-                return False
+                # Si el tipo no está definido, no ocurre nada especial
+                pass
+
+            # Si el ítem tuvo éxito (cualquier rama), quitamos la cantidad usada
+            self.inventario.quitar_item(key, cantidad)
+            return True
         else:
+            # Ítem sin clase asociada: solo lo consumimos
             self.inventario.quitar_item(key, cantidad)
             print(f"Usas {nombre}, pero no tiene efecto especial aún.")
             return True

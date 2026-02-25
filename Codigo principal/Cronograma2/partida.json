@@ -1,0 +1,14 @@
+{
+    "nombre": "Conan",
+    "vida": 120,
+    "vida_max": 120,
+    "fuerza": 40,
+    "furia": 1,
+    "fuerza_base": null,
+    "tipo_clase": "Guerrero",
+    "inventario": {
+        "escudo de madera": 1,
+        "pocion menor": 2,
+        "pocion de vida": 5
+    }
+}
