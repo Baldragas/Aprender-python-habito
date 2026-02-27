@@ -24,7 +24,6 @@ class Item:
         if tipo == 'pocion':
             curacion = self.propiedades.get('curacion', 20)
             jugador.curar(curacion)
-            print(f"¡Usas {self.nombre} y recuperas {curacion} de vida!")
             return True
 
         elif self.tipo == 'defensa':

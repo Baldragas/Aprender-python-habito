@@ -2,6 +2,7 @@ import entidades
 import mapa
 from combate import combate
 from entidades import normalize
+from entidades import Item
 
 class Juego:
     def __init__(self):
@@ -16,7 +17,7 @@ class Juego:
         sala = self.mapa.habitacion_actual
         # Normalizamos el nombre para comparar sin mayúsculas/minúsculas
         nombre_norm = normalize(nombre_objeto)
-        return any(normalize(obj) == nombre_norm for obj in sala.objetos)
+        return any(normalize(obj.nombre) == nombre_norm for obj in sala.objetos)
         
 
     def configurar(self):
@@ -73,8 +74,11 @@ class Juego:
         )
 
         # Añadir objetos a las salas
-        sala_inicio.objetos.extend(["poción pequeña", "llave oxidada"])
-        sala_media.objetos.append("espada rota")
+        sala_inicio.objetos.extend([
+            Item("Poción pequeña", "poción", curacion=20),
+            Item("Llave oxidada", "llave")
+        ])
+        sala_media.objetos.append(Item("Espada rota", "arma", daño=20))
 
         # Conectar habitaciones
         mapa.conectar_mutua(sala_inicio, "norte", sala_media, "sur")
@@ -95,26 +99,23 @@ class Juego:
         else:
             print("Ves en el suelo:")
             for objeto in sala.objetos:
-                print(f"  - {objeto}")  # ¿Qué mostramos?
+                print(f"  - {objeto.nombre}")
 
     def recoger_objeto(self, nombre_objeto):
         sala = self.mapa.habitacion_actual
-        # Buscar el objeto en la lista (case-insensitive)
+        nombre_norm = normalize(nombre_objeto)
         encontrado = None
         for obj in sala.objetos:
-            if obj.lower() == nombre_objeto.lower():
-                encontrado = (obj)
+            if normalize(obj.nombre) == nombre_norm:
+                encontrado = obj
                 break
-        
         if encontrado:
-            if self.validar_item(encontrado):
-                sala.objetos.remove(encontrado)
-                if self.jugador.añadir_al_inventario(encontrado, 1):
-                    print(f"Recoges {encontrado}.")
-            else:
-                print(f"No puedes recoger «{encontrado}» ahora.")
+            sala.objetos.remove(encontrado)
+            self.jugador.añadir_item_objeto(encontrado, 1)
+            print(f"Recoges {encontrado.nombre}.")
         else:
             print(f"No hay ningún {nombre_objeto} aquí")
+
     def bucle_principal(self):
         while self.jugando and self.jugador.esta_vivo():
             print(f"\n--- {self.mapa.habitacion_actual.nombre} ---")
