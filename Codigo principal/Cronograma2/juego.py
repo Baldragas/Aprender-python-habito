@@ -15,7 +15,6 @@ class Juego:
         Devuelve True si el ítem está disponible en la habitación actual.
         """
         sala = self.mapa.habitacion_actual
-        # Normalizamos el nombre para comparar sin mayúsculas/minúsculas
         nombre_norm = normalize(nombre_objeto)
         return any(normalize(obj.nombre) == nombre_norm for obj in sala.objetos)
         

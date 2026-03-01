@@ -8,6 +8,4 @@ from juego import Juego
 if __name__ == "__main__":
     juego = Juego()
     juego.configurar()
-    juego.validar_item("pocion pequeña")
     juego.bucle_principal()
-    print("recuerda prgramar mañana")
