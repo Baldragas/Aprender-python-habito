@@ -40,9 +40,7 @@ class Juego:
         # Pociones
         pocion_menor = entidades.Item.crear_pocion_menor()
         self.jugador.añadir_item_objeto(pocion_menor, 2)
-
-        pocion_vida = entidades.Item("Poción de vida", "pocion", valor=5, curacion=40)
-        self.jugador.añadir_item_objeto(pocion_vida, 5)
+        
 
     def _crear_enemigos(self):
         dragon = entidades.Jefe("Dragón Ancianor", 200, 30)
@@ -66,6 +64,8 @@ class Juego:
         sala_oeste = mapa.Habitacion("Sala de slimes", 
         "Una sala en ruinas invadida por telas de araña y slime's",
         enemigo=enemigos["slime"])
+        pocion_mediana = entidades.Item.crear_pocion_mediana()
+        sala_oeste.objetos.append(pocion_mediana)
         sala_boss = mapa.Habitacion(
             "Altar",
             "El cubil del dragón.",

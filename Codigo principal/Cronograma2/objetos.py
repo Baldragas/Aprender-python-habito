@@ -45,6 +45,10 @@ class Item:
         return Item("Poción menor", "poción", valor=10, curacion=25)
     
     @staticmethod
+    def crear_pocion_mediana():
+        return Item("Pocion mediana", "pocion", valor=20, curacion=45)
+    
+    @staticmethod
     def crear_pocion_mayor():
         return Item("Poción mayor", "pocion", valor=30, curacion=60)
     
