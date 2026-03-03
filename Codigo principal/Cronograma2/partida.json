@@ -1,9 +1,9 @@
 {
     "nombre": "Conan",
-    "vida": 10.0,
+    "vida": 100,
     "vida_max": 120,
     "fuerza": 40,
-    "furia": 5,
+    "furia": 3,
     "fuerza_base": null,
     "tipo_clase": "Guerrero",
     "inventario": {
