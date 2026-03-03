@@ -26,12 +26,15 @@ class Item:
             jugador.curar(curacion)
             return True
 
-        elif self.tipo == 'defensa':
-            print(f"Te proteges con {self.nombre}, por ahora no pasa nada")
+        elif tipo == 'defensa':
+            jugador.defensa_activa = True
+            print("Te cubres con el escudo. El próximo ataque hará menos daño")
             return True
-
-        elif self.tipo == 'comida':
-            print(f"Comes {self.nombre}. Sabe bien.")
+    
+        elif tipo == 'comida':
+            curacion = self.propiedades.get("curacion", 10)   # ← ya está
+            recuperado = jugador.curar(curacion)
+            print(f"*Ñam, que rica comida*. Recuperaste {recuperado} de vida.")
             return True
         else:
             print(f"No puedes usar {self.nombre} directamente.")

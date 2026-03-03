@@ -47,6 +47,8 @@ class Personaje:
         self.inventario = Inventario()
         self.items_objetos = {}
         self.vida_max = vida
+        self.defensa_activa = False
+
     def curar(self, cantidad):
         """
         Aumenta la vida del personaje en 'cantidad' sin superar vida_max.
@@ -98,11 +100,12 @@ class Personaje:
         return bool(self.inventario.items)
     
     def recibir_daño(self, cantidad):
-        daño_real = cantidad
-        if "escudo" in self.inventario.items:
-            daño_real = cantidad // 2 
-            print(f"{self.nombre} bloquea con escudo! Daño reducido a {daño_real}")
-            self.inventario.quitar_item("Escudo", 1) 
+        if self.defensa_activa:  
+            daño_real = cantidad // 2
+            print(f"{self.nombre} bloquea con el escudo! Daño reducido a {daño_real}")
+            self.defensa_activa = False
+        else:
+            daño_real = cantidad
         self._vida = max(0, self._vida - daño_real)
         print(f"{self.nombre} recibe {daño_real} de daño. Vida restante: {self._vida}")
 
