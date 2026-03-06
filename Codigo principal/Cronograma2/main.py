@@ -9,4 +9,3 @@ if __name__ == "__main__":
     juego = Juego()
     juego.configurar()
     juego.bucle_principal()
-print(f"recuerda programar mañanana bastardo, basura")

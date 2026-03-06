@@ -28,7 +28,7 @@ class Item:
 
         elif tipo == 'defensa':
             jugador.defensa_activa = True
-            print("Te cubres con el escudo. El próximo ataque hará menos daño")
+            print(f"Te cubres con {self.nombre}. El próximo ataque hará menos daño")
             return True
     
         elif tipo == 'comida':
@@ -36,12 +36,32 @@ class Item:
             recuperado = jugador.curar(curacion)
             print(f"*Ñam, que rica comida*. Recuperaste {recuperado} de vida.")
             return True
+        
+        elif tipo == 'buff':
+            efecto = {
+                "atributo": self.propiedades.get("atributo", "fuerza"),
+                "modificador": self.propiedades.get("modificador", 5),
+                "duracion": self.propiedades.get("duracion", 3)
+            }
+            jugador.aplicar_efecto(efecto)
+            return True
         else:
             print(f"No puedes usar {self.nombre} directamente.")
             return False
     
     def __str__(self):
         return f"{self.nombre} (tipo: {self.tipo})"
+    
+    @staticmethod
+    def crear_pocion_fuerza():
+        return Item(
+            "Poción de fuerza", 
+            "buff", 
+            valor=25,
+            atributo="fuerza",
+            modificador=10,
+            duracion=3
+        )
     
     @staticmethod
     def crear_pocion_menor():

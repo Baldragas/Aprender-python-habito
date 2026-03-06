@@ -4,6 +4,7 @@ def combate(jugador, enemigo):
     print(f"\n=== Combate inicia: {jugador.nombre} vs {enemigo.nombre} ===")
     
     while jugador.esta_vivo() and enemigo.esta_vivo():
+        jugador.procesar_efectos()
         print(f"\nTurno de {jugador.nombre} (Vida: {jugador._vida})")
         print(f"{enemigo.nombre} - Vida restante: {enemigo._vida}")
         print("Opciones:")

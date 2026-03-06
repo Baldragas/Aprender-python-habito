@@ -38,6 +38,8 @@ class Juego:
         print(f"Escudo añadido: {escudo} (protección {escudo.propiedades.get('proteccion', 0)})")
 
         # Pociones
+        pocion_fuerza = entidades.Item.crear_pocion_fuerza()
+        self.jugador.añadir_item_objeto(pocion_fuerza, 2)
         pocion_menor = entidades.Item.crear_pocion_menor()
         self.jugador.añadir_item_objeto(pocion_menor, 2)
         

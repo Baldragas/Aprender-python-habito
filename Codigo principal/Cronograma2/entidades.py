@@ -48,6 +48,39 @@ class Personaje:
         self.items_objetos = {}
         self.vida_max = vida
         self.defensa_activa = False
+        self.efectos = []
+
+    def aplicar_efecto(self, efecto):
+        """Registra un efecto y aplica su modificador al atributo correspondiente."""
+        # 1. Guardar el efecto en la lista
+        self.efectos.append(efecto)
+
+        # 2. Obtener el atributo y el modificador
+        atributo = efecto["atributo"]
+        modificador = efecto["modificador"]
+
+        # 3. Aplicar el cambio al atributo
+        valor_actual = getattr(self, atributo)
+        setattr(self, atributo, valor_actual + modificador)
+
+        # 4. Mensaje informativo (opcional)
+        print(f"⚡ Efecto aplicado: {atributo} {modificador:+d} durante {efecto['duracion']} turnos. Ahora {atributo} = {getattr(self, atributo)}")
+        
+    def procesar_efectos(self):
+        efectos_a_eliminar = []
+        for efecto in self.efectos:
+            efecto['duracion'] -= 1
+            if efecto['duracion'] <= 0:
+                # Revertir el efecto
+                atributo = efecto['atributo']
+                modificador = efecto['modificador']
+                valor_actual = getattr(self, atributo)
+                setattr(self, atributo, valor_actual - modificador)
+                efectos_a_eliminar.append(efecto)
+                print(f"⚡ Efecto de {atributo} ha terminado. Ahora {atributo} = {getattr(self, atributo)}")
+        # Eliminar los efectos terminados
+        for efecto in efectos_a_eliminar:
+            self.efectos.remove(efecto)
 
     def curar(self, cantidad):
         """
