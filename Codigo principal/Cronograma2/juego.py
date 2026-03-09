@@ -3,6 +3,7 @@ import mapa
 from combate import combate
 from entidades import normalize
 from entidades import Item
+import random
 
 class Juego:
     def __init__(self):
@@ -161,19 +162,25 @@ class Juego:
                 if sala_actual.enemigo is not None:
                     enemigo_presente = sala_actual.enemigo
                     print(f"¡Un {enemigo_presente.nombre} aparece!")
+                    resultado = combate(self.jugador, enemigo_presente)   # <--- guardamos resultado
+                    if resultado == "huida":
+                        # Escapar a una sala aleatoria entre las salidas disponibles
+                        salidas = list(sala_actual.salidas.keys())
+                        if salidas:
+                            direccion = random.choice(salidas)
+                            self.mapa.mover(direccion)
+                            print(f"¡Escapas en dirección {direccion}!")
+                        else:
+                            print("¡No hay salida! Estás atrapado.")
                     
-                    # LLAMADA AL COMBATE
-                    combate(self.jugador, enemigo_presente)
-                    
-                    if not enemigo_presente.esta_vivo():
-                        # Si el enemigo muere, lo quitamos de la  para que no "reviva" al volver
-                        sala_actual.enemigo = None 
-                        self.jugador.guardar_partida()
-                    elif not self.jugador.esta_vivo():
+                    elif resultado == "derrota":
                         print("Has caído en batalla...")
                         break
-            else:
-                print("No hay salida en esa dirección.")
+                    
+                    elif resultado == "victoria":
+                        # El enemigo ha muerto, lo quitamos de la sala
+                        sala_actual.enemigo = None
+                        self.jugador.guardar_partida()
 
         print("Fin de la aventura.")
                 # Usa self.jugador y self.mapa
