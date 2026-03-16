@@ -22,6 +22,20 @@ def pulgadas_a_mm(pulgadas):
     resultado = pulgadas * 25.4
     print(f"\n[RESULTADO]: {pulgadas} in equivalen a {resultado:.2f} milímetros.")
 
+def ppg_a_sg(ppg):
+    resultado = ppg / 8.33
+    print(f"\n[DENSIDAD]: {ppg} PPG equivalen a {resultado:.2f} SG (Gravedad Específica).")
+
+def sg_a_ppg(sg):
+    resultado = sg * 8.33
+    print(f"\n[DENSIDAD]: {sg} SG equivalen a {resultado:.2f} PPG.")
+
+def calcular_Ph(densidad, profundidad):
+    resultado = 0.052 * densidad * profundidad
+    print(f"\n[CÁLCULO TÉCNICO]:")
+    print(f"Con un lodo de {densidad} ppg a {profundidad} ft de profundidad,")
+    print(f"la Presión Hidrostática es de {resultado:.2f} PSI.")
+
 # --- INICIO DEL PROGRAMA ---
 print("--- Conversor Técnico de Unidades Petroleras ---")
 
@@ -30,6 +44,8 @@ Seleccione la categoría:
 1. Masa
 2. Volumen
 3. Longitud
+4. Densidad del Lodo
+5. Presión Hidrostática
 0. Salir
 """
 
@@ -97,6 +113,33 @@ while True:
                 print("Opción de longitud no válida.")
         except ValueError:
             print("\n¡ERROR!: Por favor introduce solo números.")
+            
+    elif seleccion == "4":
+        print("\n--- Cálculo de densidad del lodo---")
+        print("1. PPG a SG (Gravedad Específica)")
+        print("2. SG a PPG")
+        try:
+            selectD = input("Seleccione: ")
+            if selectD in ("1", "2"):
+                cifra = float(input("Introduzca la cifra númerica: "))
+                if selectD == "1":
+                    ppg_a_sg(cifra)
+                else:
+                    sg_a_ppg(cifra)
+            else:
+                print("Opción válida, verifique su selección.")     
+        except ValueError:
+            print("\n¡ERROR!: Por favor introduce solo valores numéricos.")
 
+    elif seleccion == "5":
+        print("\n--- CÁLCULO DE PRESIÓN HIDROSTÁTICA ---")
+        try:
+            densidad = float(input("Ingrese la densidad del lodo (PPG): "))
+            profundidad = float(input("Ingrese la profundidad vertical (TVD en pies): "))
+            
+            calcular_Ph(densidad, profundidad)
+            
+        except ValueError:
+            print("\n¡ERROR!: Por favor introduce solo valores numéricos.")
     else:
         print("Por favor introduzca un número válido del menú.")
