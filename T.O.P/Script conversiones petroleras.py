@@ -1,3 +1,4 @@
+print("si no saludas, no eres amable")
 def libras_a_kg(libras):
     resultado = libras * 0.453592
     print(f"\n[RESULTADO]: {libras} lb equivalen a {resultado:.2f} kg")
