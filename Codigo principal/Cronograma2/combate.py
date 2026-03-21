@@ -1,9 +1,9 @@
 import entidades
 def barra_vida(personaje, longitud=10):
-    porcentaje = personaje._vida / personaje.vida_max
+    porcentaje = personaje.vida / personaje.vida_max
     relleno = int(porcentaje * longitud)
     vacio = longitud - relleno
-    return f"[{'█' * relleno}{'░' * vacio}] {personaje._vida}/{personaje.vida_max}"
+    return f"[{'█' * relleno}{'░' * vacio}] {personaje.vida}/{personaje.vida_max}"
 
 def mostrar_efectos(personaje):
     """Devuelve un string con los efectos activos del personaje."""

@@ -14,6 +14,15 @@ class Item:
                 self.propiedades[key] = value
             else:
                 print(f"⚠️ Propiedad '{key}' no permitida para Item")
+                
+    def to_dict(self):
+        """Convierte el objeto en un diccionario que JSON sí entiende."""
+        return {
+            "nombre": self.nombre,
+            "tipo": self.tipo,
+            "valor": self.valor,
+            "propiedades": self.propiedades
+        }
 
     def es_pocion(self):
         tipo = self.tipo.lower().replace('ó', 'o')

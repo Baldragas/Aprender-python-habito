@@ -51,7 +51,7 @@ class Mapa:
                 if hab.enemigo.esta_vivo():
                     # Verificar si está herido (vida < 50% de vida máxima)
                     if hasattr(hab.enemigo, '_vida') and hasattr(hab.enemigo, 'vida_max'):
-                        vida_actual = hab.enemigo._vida
+                        vida_actual = hab.enemigo.vida
                         vida_maxima = hab.enemigo.vida_max
                         
                         if vida_maxima > 0 and vida_actual < vida_maxima * 0.5:

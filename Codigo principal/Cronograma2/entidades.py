@@ -9,13 +9,17 @@ class Inventario:
     def __init__(self):
         self.items = {}
 
-    def agregar_item(self, nombre, cantidad=1):
-        key = normalize(nombre)
+    def agregar_item(self, item_obj, cantidad=1):
+        key = normalize(item_obj.nombre)
+        
         if key in self.items:
-            self.items[key] += cantidad
+            self.items[key]["cantidad"] += cantidad
         else:
-            self.items[key] = cantidad
-        print(f"Se añadió {cantidad} {nombre} al inventario")
+            self.items[key] = {
+                "objeto": item_obj,      
+                "cantidad": cantidad  
+            }
+        print(f"Se añadió {cantidad}x {item_obj.nombre} al inventario.")
 
     def quitar_item(self, nombre, cantidad=1):
         key = normalize(nombre)
@@ -34,21 +38,44 @@ class Inventario:
 
 class Personaje:
     def __init__(self, nombre, vida, fuerza):
-        if vida <= 0:
-            raise ValueError("La vida debe ser mayor a cero (fue {vida})")
-        
-        # Validar fuerza
-        if fuerza < 1:  # Asumimos que fuerza mínima es 1
-            raise ValueError("La fuerza debe ser al menos 1")
-        
         self.nombre = nombre
-        self._vida = vida
+        # Usar la versión sin guion activa el @setter inmediatamente
+        self.vida = vida 
         self.fuerza = fuerza
-        self.inventario = Inventario()
-        self.items_objetos = {}
         self.vida_max = vida
-        self.defensa_activa = False
+        self.inventario = Inventario()
         self.efectos = []
+        self.defensa_activa = False
+
+    # --- ADUANA DE VIDA ---
+    @property
+    def vida(self):
+        return self._vida
+
+    @vida.setter
+    def vida(self, valor_nuevo):
+        if valor_nuevo < 0:
+            self._vida = 0
+        else:
+            self._vida = valor_nuevo
+
+    # --- ADUANA DE FUERZA ---
+    @property
+    def fuerza(self):
+        return self._fuerza
+
+    @fuerza.setter
+    def fuerza(self, valor_nuevo):
+        if valor_nuevo < 1:
+            self._fuerza = 1
+        elif valor_nuevo > 100:
+            self._fuerza = 100
+        else:
+            self._fuerza = valor_nuevo
+
+    def esta_vivo(self):
+        # Usamos la propiedad pública 'vida'
+        return self.vida > 0
 
     def aplicar_efecto(self, efecto):
         """Registra un efecto y aplica su modificador al atributo correspondiente."""
@@ -87,22 +114,18 @@ class Personaje:
         Aumenta la vida del personaje en 'cantidad' sin superar vida_max.
         Devuelve la cantidad real de vida recuperada.
         """
-        vida_anterior = self._vida
-        self._vida = min(self.vida_max, self._vida + cantidad)
-        recuperado = self._vida - vida_anterior
+        vida_anterior = self.vida
+        self.vida = min(self.vida_max, self.vida + cantidad)
+        recuperado = self.vida - vida_anterior
         if recuperado > 0:
-            print(f"{self.nombre} recupera {recuperado} puntos de vida. Vida actual {self._vida}")
+            print(f"{self.nombre} recupera {recuperado} puntos de vida. Vida actual {self.vida}")
         else:
             print(f"{self.nombre} ya está al máximo de vida.")
         return recuperado
 
     def añadir_item_objeto(self, item_obj, cantidad=1):
         print(f"{self.nombre} encuentra {cantidad} {item_obj.nombre}")
-        # Por ahora, solo prueba almacenando como string
-        self.inventario.agregar_item(item_obj.nombre, cantidad)
-        print(f"(Objeto Item detectado: cura {item_obj.propiedades.get('curacion', 0)})")
-        key = normalize(item_obj.nombre)
-        self.items_objetos[key] = item_obj
+        self.inventario.agregar_item(item_obj, cantidad)
         
     def añadir_al_inventario(self, nombre, cantidad=1):
         print(f"{self.nombre} encuentra {cantidad} {nombre}")
@@ -129,7 +152,11 @@ class Personaje:
             return True
 
     def mostrar_inventario(self):
-        print(self.inventario)
+        for key, datos in self.inventario.items.items():
+            objeto_real = datos["objeto"]
+            cantidad = datos["cantidad"]
+            # Accedemos al atributo .nombre del objeto
+            print(f"- {objeto_real.nombre}: {cantidad}")
         return bool(self.inventario.items)
     
     def recibir_daño(self, cantidad):
@@ -139,34 +166,42 @@ class Personaje:
             self.defensa_activa = False
         else:
             daño_real = cantidad
-        self._vida = max(0, self._vida - daño_real)
-        print(f"{self.nombre} recibe {daño_real} de daño. Vida restante: {self._vida}")
+        self.vida = max(0, self.vida - daño_real)
+        print(f"{self.nombre} recibe {daño_real} de daño. Vida restante: {self.vida}")
 
     def esta_vivo(self):
-        return self._vida > 0
+        return self.vida > 0
 
     def atacar(self, objetivo):
         print(f"{self.nombre} ataca a {objetivo.nombre} causando {self.fuerza} de daño")
         objetivo.recibir_daño(self.fuerza)
 
     def __str__(self):
-        return f"{self.nombre} (Vida: {self._vida}, Fuerza: {self.fuerza})\n{self.inventario}"
+        return f"{self.nombre} (Vida: {self.vida}, Fuerza: {self.fuerza})\n{self.inventario}"
 
     def guardar_partida(self, archivo='partida.json'):
+        inventario_serializado = {}
+        for key, datos in self.inventario.items.items():
+            inventario_serializado[key] = {
+                "objeto": datos["objeto"].to_dict(),
+                "cantidad": datos["cantidad"]
+            }
+
         estado = {
             'nombre': self.nombre,
-            'vida': self._vida,
+            'vida': self.vida,
             'vida_max': self.vida_max,
             'fuerza': self.fuerza,
             'furia': getattr(self, 'furia', 0), 
             'fuerza_base': getattr(self, 'fuerza_base', None),
             'tipo_clase': type(self).__name__,
-            'inventario': self.inventario.items 
+            'inventario': inventario_serializado 
         }
+        
         with open(archivo, 'w') as f:
             json.dump(estado, f, indent=4)
-        print("Partida guardada.")
-
+        print(f"¡Partida de {self.nombre} guardada con éxito!")
+        
     def cargar_partida(self, diccionario_clases, archivo='partida.json'):
         try:
             with open(archivo, 'r') as f:
@@ -195,10 +230,20 @@ class Personaje:
             if 'vida_max' in estado:
                 self.vida_max = estado['vida_max']
             
-            # Cargar inventario: actualizar el diccionario items del inventario actual
             if 'inventario' in estado:
                 self.inventario.items.clear()
-                self.inventario.items.update(estado['inventario'])
+                
+                for key, info in estado['inventario'].items():
+                    # Re-hidratamos el objeto Item desde el diccionario
+                    nuevo_item = Item(
+                        nombre=info["objeto"]["nombre"],
+                        tipo=info["objeto"]["tipo"],
+                        valor=info["objeto"]["valor"],
+                        propiedades=info["objeto"]["propiedades"]
+                    )
+                    
+                    # Lo metemos al inventario usando nuestro método oficial
+                    self.inventario.agregar_item(nuevo_item, info["cantidad"])
             
             print("Partida cargada.")
         except FileNotFoundError:
@@ -215,7 +260,7 @@ class Guerrero(Personaje):
         print(f"¡{self.nombre} gana 1 punto de furia! (Total: {self.furia})")
 
     def __str__(self):
-        return f"{self.nombre} (Vida: {self._vida}, Fuerza: {self.fuerza}, Furia: {self.furia})"
+        return f"{self.nombre} (Vida: {self.vida}, Fuerza: {self.fuerza}, Furia: {self.furia})"
 
 
 class Enemigo(Personaje): 
@@ -232,7 +277,7 @@ class Enemigo(Personaje):
 
     def __repr__(self):
         # Retorna un string que muestre el nombre y la vida de forma técnica
-        return f"Enemigo(nombre = '{self.nombre}', vida = {self._vida})"
+        return f"Enemigo(nombre = '{self.nombre}', vida = {self.vida})"
 
 class Jefe(Personaje): 
     def __init__(self, nombre, vida, fuerza_base):

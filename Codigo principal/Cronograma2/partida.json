@@ -1,0 +1,38 @@
+{
+    "nombre": "Conan",
+    "vida": 20,
+    "vida_max": 120,
+    "fuerza": 40,
+    "furia": 7,
+    "fuerza_base": null,
+    "tipo_clase": "Guerrero",
+    "inventario": {
+        "escudo de madera": {
+            "objeto": {
+                "nombre": "Escudo de madera",
+                "tipo": "defensa",
+                "valor": 15,
+                "propiedades": {}
+            },
+            "cantidad": 2
+        },
+        "pocion de fuerza": {
+            "objeto": {
+                "nombre": "Poci\u00f3n de fuerza",
+                "tipo": "buff",
+                "valor": 25,
+                "propiedades": {}
+            },
+            "cantidad": 4
+        },
+        "pocion menor": {
+            "objeto": {
+                "nombre": "Poci\u00f3n menor",
+                "tipo": "poci\u00f3n",
+                "valor": 10,
+                "propiedades": {}
+            },
+            "cantidad": 4
+        }
+    }
+}
