@@ -144,80 +144,68 @@ class Juego:
             print(f"Recoges {encontrado.nombre}.")
         else:
             print(f"No hay ningún {nombre_objeto} aquí")
+        
+    def gestionar_movimiento(self, direccion):
+        # 1. Intentamos mover al personaje usando el método de Mapa
+        if self.mapa.mover(direccion):
+            sala_actual = self.mapa.habitacion_actual
+            sala_actual.visitada = True
+            
+            # 2. Verificamos si hay un enemigo vivo en la nueva sala
+            if sala_actual.enemigo and sala_actual.enemigo.esta_vivo():
+                print(f"¡Un {sala_actual.enemigo.nombre} aparece!")
+                
+                # 3. Llamamos al combate (importado de combate.py)
+                resultado = combate(self.jugador, sala_actual.enemigo)
+                
+                if resultado == "victoria":
+                    sala_actual.enemigo = None
+                    self.jugador.guardar_partida()
+                
+                elif resultado == "huida":
+                    opciones = list(sala_actual.salidas.keys())
+                    escape = random.choice(opciones)
+                    self.mapa.mover(escape)
+                    print(f"¡Huyes despavorido y terminas en: {self.mapa.habitacion_actual.nombre}!")
+                
+                elif resultado == "derrota":
+                    print("Has caído en batalla...")
+                    self.jugando = False
+            return True
+        else:
+            print(f"No hay salida hacia el {direccion}.")
+            return False
 
     def bucle_principal(self):
         while self.jugando and self.jugador.esta_vivo():
             print(f"\n--- {self.mapa.habitacion_actual.nombre} ---")
             print(self.mapa.habitacion_actual.descripcion)
-            print("Comandos: norte/sur/este/oeste/mapa/inventario/examinar/recoger <objeto>/salir")
-            accion = (input("¿A dónde ir?: ")).lower().strip()
-            if accion == "salir":
+            
+            entrada = input("\n¿Qué quieres hacer?: ").lower().strip()
+            partes = entrada.split(" ", 1) # Separa "usar pocion" en ["usar", "pocion"]
+            comando = partes[0]
+            argumento = partes[1] if len(partes) > 1 else None
+
+            if comando == "salir":
                 self.jugador.guardar_partida()
                 break
+
+            elif comando == "inventario":
+                self.jugador.mostrar_inventario()
+
+            elif comando == "usar" and argumento:
+                # Acceso directo: "usar pocion"
+                self.jugador.usar_item(argumento)
+
+            elif comando == "equipar" and argumento:
+                # Nuevo comando: "equipar escudo"
+                self.jugador.equipar_item(argumento)
+
+            elif comando == "recoger" and argumento:
+                self.recoger_objeto(argumento)
+
+            elif comando in ["norte", "sur", "este", "oeste"]:
+                self.gestionar_movimiento(comando)
             
-            elif accion == "inventario":
-                if self.jugador.mostrar_inventario():
-                    while True:
-                        usar = input("¿Quieres usar algo? (s/n)").lower().strip()
-                        if usar in ("s", "si", "sí", "y", "yes"):
-                            item = normalize(input("¿Qué item quieres usar?: "))
-                            self.jugador.usar_item(item, 1)
-                            break
-                        elif usar in ("n", "no", "salir"):
-                            print("Volviendo al menú principal.")
-                            break
-                        else:
-                            print("Respuesta no reconocida. Escribe 's' (sí) o 'n' (no).")
-                continue
-
-            elif accion == "mapa":
-                print(self.mapa.dibujar_mapa_bonito())
-                continue
-
-            elif accion == "examinar":
-                self._examinar_habitacion()
-
-            elif accion.startswith("recoger "):
-                nombre_objeto = accion[8:].strip()
-                self.recoger_objeto(nombre_objeto)
-
-            elif self.mapa.mover(accion):
-                sala_actual = self.mapa.habitacion_actual
-                sala_actual.visitada = True
-                
-                # ¿Hay alguien aquí para pelear?
-                if sala_actual.enemigo is not None:
-                    enemigo_presente = sala_actual.enemigo
-                    print(f"¡Un {enemigo_presente.nombre} aparece!")
-                    resultado = combate(self.jugador, enemigo_presente)   # <--- guardamos resultado
-                    if resultado == "huida":
-                        salidas = list(sala_actual.salidas.keys())  # sala_actual es la del combate
-                        if salidas:
-                            direccion = random.choice(salidas)
-                            self.mapa.mover(direccion)
-                            print(f"¡Escapas en dirección {direccion}!")
-                            
-                            # AHORA comprobamos la NUEVA sala
-                            sala_nueva = self.mapa.habitacion_actual
-                            if sala_nueva.enemigo is not None and sala_nueva.enemigo.esta_vivo():
-                                print(f"¡Y caes justo donde {sala_nueva.enemigo.nombre} te espera!")
-                                resultado2 = combate(self.jugador, sala_nueva.enemigo)
-                                if resultado2 == "victoria":
-                                    sala_nueva.enemigo = None
-                                elif resultado2 == "derrota":
-                                    break
-                        else:
-                            print("¡No hay salida! Estás atrapado.")
-                    
-                    elif resultado == "derrota":
-                        print("Has caído en batalla...")
-                        break
-                    
-                    elif resultado == "victoria":
-                        # El enemigo ha muerto, lo quitamos de la sala
-                        sala_actual.enemigo = None
-                        self.jugador.guardar_partida()
-            else:
-                print(f"No hay salida en la dirección: {accion} (o comando no reconocido)")
         print("Fin de la aventura.")
                 # Usa self.jugador y self.mapa

@@ -54,7 +54,7 @@ def combate(jugador, enemigo):
             jugador.atacar(enemigo)
         elif eleccion == '2':
             item = input("Nombre del item a usar: ").strip()
-            jugador.usar_item(item, 1)
+            jugador.usar_item(item)
         elif eleccion == '3':
             print("¡Huyes del combate!")
             return "huida"

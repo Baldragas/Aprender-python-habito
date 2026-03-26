@@ -1,65 +1,51 @@
-
 class Item:
     def __init__(self, nombre, tipo, valor=0, **kwargs):
         self.nombre = nombre
-        self.tipo = tipo  # 'poción', 'arma', 'comida', 'llave'
+        self.tipo = tipo  # 'curacion', 'defensa', 'buff'
         self.valor = valor
+        self.propiedades = {k: v for k, v in kwargs.items() if k in ['curacion', 'proteccion', 'duracion']}
 
-        propiedades_permitidas =['curacion', 'daño', 'proteccion', 'duracion']
-
-        self.propiedades = {}
-
-        for key, value in kwargs.items():
-            if key in propiedades_permitidas:
-                self.propiedades[key] = value
-            else:
-                print(f"⚠️ Propiedad '{key}' no permitida para Item")
-                
-    def to_dict(self):
-        """Convierte el objeto en un diccionario que JSON sí entiende."""
-        return {
-            "nombre": self.nombre,
-            "tipo": self.tipo,
-            "valor": self.valor,
-            "propiedades": self.propiedades
-        }
-
-    def es_pocion(self):
-        tipo = self.tipo.lower().replace('ó', 'o')
-        return tipo == 'pocion' and 'curacion' in self.propiedades
-    
-    def usar(self, jugador):
-        tipo = self.tipo.lower().replace('ó', 'o')
-        if tipo == 'pocion':
-            curacion = self.propiedades.get('curacion', 20)
-            jugador.curar(curacion)
-            return True
-
-        elif tipo == 'defensa':
-            jugador.defensa_activa = True
-            print(f"Te cubres con {self.nombre}. El próximo ataque hará menos daño")
-            return True
-    
-        elif tipo == 'comida':
-            curacion = self.propiedades.get("curacion", 10)   # ← ya está
-            recuperado = jugador.curar(curacion)
-            print(f"*Ñam, que rica comida*. Recuperaste {recuperado} de vida.")
+    def aplicar_uso(self, usuario):
+        if self.tipo == "curacion":
+            if usuario.vida >= usuario.vida_max:
+                print(f"❤️ {usuario.nombre} ya tiene la salud al máximo.")
+                return False
+            usuario.vida += self.valor
+            print(f"✨ {usuario.nombre} usa {self.nombre} y recupera {self.valor} HP.")
             return True
         
-        elif tipo == 'buff':
+        elif self.tipo == "buff":
+            # Extraemos los datos del diccionario 'propiedades'
             efecto = {
                 "atributo": self.propiedades.get("atributo", "fuerza"),
                 "modificador": self.propiedades.get("modificador", 5),
                 "duracion": self.propiedades.get("duracion", 3)
             }
-            jugador.aplicar_efecto(efecto)
+            usuario.aplicar_efecto(efecto)
+            print(f"🧪 {usuario.nombre} consume {self.nombre}.")
             return True
-        else:
-            print(f"No puedes usar {self.nombre} directamente.")
-            return False
-    
-    def __str__(self):
-        return f"{self.nombre} (tipo: {self.tipo})"
+        
+        print(f"❓ El objeto {self.nombre} no se puede usar así.")
+        return False
+
+    def to_dict(self):
+        return {"nombre": self.nombre, "tipo": self.tipo, "valor": self.valor, "propiedades": self.propiedades}
+
+    @staticmethod
+    def crear_pocion_menor():
+        return Item("Poción menor", "curacion", valor=25)
+
+    @staticmethod
+    def crear_pocion_mediana():
+        return Item("Pocion mediana", "curacion", valor=45)
+        
+    @staticmethod
+    def crear_pocion_mayor():
+        return Item("Poción mayor", "curacion", valor=60)
+
+    @staticmethod
+    def crear_escudo():
+        return Item("Escudo de madera", "defensa", valor=15, proteccion=5, duracion=3)
     
     @staticmethod
     def crear_pocion_fuerza():
@@ -72,18 +58,5 @@ class Item:
             duracion=3
         )
     
-    @staticmethod
-    def crear_pocion_menor():
-        return Item("Poción menor", "poción", valor=10, curacion=25)
     
-    @staticmethod
-    def crear_pocion_mediana():
-        return Item("Pocion mediana", "pocion", valor=20, curacion=45)
     
-    @staticmethod
-    def crear_pocion_mayor():
-        return Item("Poción mayor", "pocion", valor=30, curacion=60)
-    
-    @staticmethod
-    def crear_escudo():
-        return Item("Escudo de madera", "defensa", valor=15, proteccion=5)

@@ -11,71 +11,68 @@ class Inventario:
 
     def agregar_item(self, item_obj, cantidad=1):
         key = normalize(item_obj.nombre)
-        
         if key in self.items:
             self.items[key]["cantidad"] += cantidad
         else:
-            self.items[key] = {
-                "objeto": item_obj,      
-                "cantidad": cantidad  
-            }
-        print(f"Se añadió {cantidad}x {item_obj.nombre} al inventario.")
+            self.items[key] = {"objeto": item_obj, "cantidad": cantidad}
 
-    def quitar_item(self, nombre, cantidad=1):
-        key = normalize(nombre)
-        if key in self.items and self.items[key] >= cantidad:
-            self.items[key] -= cantidad
-            if self.items[key] <= 0:
-                self.items.pop(key)
-            return True
-        else:
-            return False
-            
+    def quitar_item(self, nombre_item, cantidad=1):
+        key = normalize(nombre_item)
+        if key in self.items:
+            if self.items[key]["cantidad"] >= cantidad:
+                self.items[key]["cantidad"] -= cantidad
+                if self.items[key]["cantidad"] <= 0:
+                    del self.items[key]
+                return True
+        return False
+
     def __str__(self):
-        if not self.items:
-            return "Inventario vacío"
-        return "Inventario: " + ", ".join(f"{key.capitalize()}: {cant}" for key, cant in self.items.items())
+        if not self.items: return "Inventario vacío"
+        return "\n".join([f"- {v['objeto'].nombre} (x{v['cantidad']})" for v in self.items.values()])
 
 class Personaje:
     def __init__(self, nombre, vida, fuerza):
         self.nombre = nombre
-        # Usar la versión sin guion activa el @setter inmediatamente
-        self.vida = vida 
-        self.fuerza = fuerza
         self.vida_max = vida
+        self._vida = vida
+        self.fuerza = fuerza
         self.inventario = Inventario()
-        self.efectos = []
+        self.equipo = {"escudo": None, "arma": None}
         self.defensa_activa = False
+        self.efectos = []
 
-    # --- ADUANA DE VIDA ---
     @property
-    def vida(self):
-        return self._vida
+    def vida(self): return self._vida
 
     @vida.setter
-    def vida(self, valor_nuevo):
-        if valor_nuevo < 0:
-            self._vida = 0
+    def vida(self, nuevo_valor):
+        if nuevo_valor < 0: self._vida = 0
+        elif nuevo_valor > self.vida_max: self._vida = self.vida_max
+        else: self._vida = nuevo_valor
+
+    def esta_vivo(self): return self.vida > 0
+
+    def usar_item(self, nombre_buscado):
+        key = normalize(nombre_buscado)
+        if key in self.inventario.items:
+            item_obj = self.inventario.items[key]["objeto"]
+            if item_obj.aplicar_uso(self):
+                self.inventario.quitar_item(key, 1)
         else:
-            self._vida = valor_nuevo
+            print(f"❌ No tienes '{nombre_buscado}' en el inventario.")
+    
+    def mostrar_inventario(self):
+        print(f"\n🎒 Inventario de {self.nombre}:")
+        print(self.inventario)
 
-    # --- ADUANA DE FUERZA ---
-    @property
-    def fuerza(self):
-        return self._fuerza
-
-    @fuerza.setter
-    def fuerza(self, valor_nuevo):
-        if valor_nuevo < 1:
-            self._fuerza = 1
-        elif valor_nuevo > 100:
-            self._fuerza = 100
-        else:
-            self._fuerza = valor_nuevo
-
-    def esta_vivo(self):
-        # Usamos la propiedad pública 'vida'
-        return self.vida > 0
+    def equipar_item(self, nombre_buscado):
+        key = normalize(nombre_buscado)
+        if key in self.inventario.items:
+            item_obj = self.inventario.items[key]["objeto"]
+            if item_obj.tipo == "defensa":
+                self.equipo["escudo"] = item_obj
+                self.inventario.quitar_item(key, 1)
+                print(f"🛡️ {item_obj.nombre} equipado.")
 
     def aplicar_efecto(self, efecto):
         """Registra un efecto y aplica su modificador al atributo correspondiente."""
@@ -92,7 +89,8 @@ class Personaje:
 
         # 4. Mensaje informativo (opcional)
         print(f"⚡ Efecto aplicado: {atributo} {modificador:+d} durante {efecto['duracion']} turnos. Ahora {atributo} = {getattr(self, atributo)}")
-        
+    
+
     def procesar_efectos(self):
         efectos_a_eliminar = []
         for efecto in self.efectos:
@@ -131,25 +129,20 @@ class Personaje:
         print(f"{self.nombre} encuentra {cantidad} {nombre}")
         self.inventario.agregar_item(nombre, cantidad)
 
-    def usar_item(self, nombre, cantidad=1):
-        key = normalize(nombre)
-
-        if key not in self.inventario.items or self.inventario.items[key] < cantidad:
-            print(f"No tienes suficiente {nombre}")
-            return False
-
-        if key in self.items_objetos:
-            item_obj = self.items_objetos[key]
-            # Aplicar el efecto tantas veces como cantidad
-            for _ in range(cantidad):
-                item_obj.usar(self)   # <--- DELEGACIÓN
-            self.inventario.quitar_item(key, cantidad)
-            return True
+    def usar_item(self, nombre_buscado):
+        key = normalize(nombre_buscado)
+        
+        # 1. Verificamos si existe en el diccionario
+        if key in self.inventario.items:
+            datos = self.inventario.items[key]
+            item_obj = datos["objeto"]
+            
+            # 2. Intentamos usarlo (la lógica de curación/buff)
+            if item_obj.aplicar_uso(self):
+                # 3. Si se usó con éxito, lo quitamos de la caja
+                self.inventario.quitar_item(key, 1)
         else:
-            # Si no hay objeto Item asociado (solo string), lo tratamos como ítem genérico
-            self.inventario.quitar_item(key, cantidad)
-            print(f"Usas {nombre}, pero no tiene efecto especial aún.")
-            return True
+            print(f"❌ No tienes '{nombre_buscado}' en tu inventario.")
 
     def mostrar_inventario(self):
         for key, datos in self.inventario.items.items():
@@ -160,14 +153,24 @@ class Personaje:
         return bool(self.inventario.items)
     
     def recibir_daño(self, cantidad):
-        if self.defensa_activa:  
-            daño_real = cantidad // 2
-            print(f"{self.nombre} bloquea con el escudo! Daño reducido a {daño_real}")
-            self.defensa_activa = False
+        escudo = self.equipo["escudo"]
+        
+        if escudo and escudo.propiedades.get("duracion", 0) > 0:
+            proteccion = escudo.propiedades.get("proteccion", 0)
+            daño_real = max(0, cantidad - proteccion)
+            
+            # Aplicamos el desgaste
+            escudo.propiedades["duracion"] -= 1
+            print(f"🛡️ El {escudo.nombre} bloquea {proteccion} de daño. (Quedan {escudo.propiedades['duracion']} usos)")
+            
+            # Si se rompe, lo quitamos del equipo
+            if escudo.propiedades["duracion"] <= 0:
+                print(f"💥 ¡Tu {escudo.nombre} se ha hecho pedazos!")
+                self.equipo["escudo"] = None 
         else:
             daño_real = cantidad
-        self.vida = max(0, self.vida - daño_real)
-        print(f"{self.nombre} recibe {daño_real} de daño. Vida restante: {self.vida}")
+            
+        self.vida -= daño_real
 
     def esta_vivo(self):
         return self.vida > 0
@@ -251,9 +254,9 @@ class Personaje:
 
 class Guerrero(Personaje):
     def __init__(self, nombre, vida, fuerza):
+        self.vida_max = vida
         super().__init__(nombre, vida, fuerza)
-        self.furia = 0 
-
+        self.furia = 0
     def atacar(self, objetivo):
         super().atacar(objetivo)
         self.furia += 1
@@ -266,6 +269,7 @@ class Guerrero(Personaje):
 class Enemigo(Personaje): 
     # Quitaste los ???, la herencia está bien hecha.
     def __init__(self, nombre, vida, fuerza, experiencia_otorgada):
+        self.vida_max = vida
         super().__init__(nombre, vida, fuerza)
         self.experiencia = experiencia_otorgada
         
@@ -281,6 +285,7 @@ class Enemigo(Personaje):
 
 class Jefe(Personaje): 
     def __init__(self, nombre, vida, fuerza_base):
+        self.vida_max = vida
         super().__init__(nombre, vida, fuerza_base)
         self.fuerza_base = fuerza_base 
 

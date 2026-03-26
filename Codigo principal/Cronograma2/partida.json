@@ -1,9 +1,9 @@
 {
     "nombre": "Conan",
-    "vida": 20,
+    "vida": 70,
     "vida_max": 120,
     "fuerza": 40,
-    "furia": 7,
+    "furia": 6,
     "fuerza_base": null,
     "tipo_clase": "Guerrero",
     "inventario": {
@@ -14,7 +14,7 @@
                 "valor": 15,
                 "propiedades": {}
             },
-            "cantidad": 2
+            "cantidad": 3
         },
         "pocion de fuerza": {
             "objeto": {
@@ -23,16 +23,16 @@
                 "valor": 25,
                 "propiedades": {}
             },
-            "cantidad": 4
+            "cantidad": 6
         },
         "pocion menor": {
             "objeto": {
                 "nombre": "Poci\u00f3n menor",
-                "tipo": "poci\u00f3n",
-                "valor": 10,
+                "tipo": "curacion",
+                "valor": 25,
                 "propiedades": {}
             },
-            "cantidad": 4
+            "cantidad": 6
         }
     }
 }
